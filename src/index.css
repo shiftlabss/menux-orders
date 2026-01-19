@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+@import './styles/design-tokens.css';
+
+:root {
+  --bg-color: var(--bg-app);
+  --card-bg: var(--bg-surface);
+  --spacing: 16px;
+  --border-radius: 12px;
+  --sidebar-width: 420px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  font-family: 'Bricolage Grotesque', 'Inter', system-ui, -apple-system, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  /* Layout manages internal scrolling */
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}

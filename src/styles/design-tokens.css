@@ -1,0 +1,122 @@
+/* src/styles/design-tokens.css */
+
+:root {
+    /* =========================================
+     1. Primitive Palette (Base Colors)
+     ========================================= */
+
+    /* Neutrals */
+    --color-white: #FFFFFF;
+    --color-white-alpha-30: rgba(255, 255, 255, 0.3);
+    --color-black: #000000;
+
+    --color-gray-50: #F6F6F6;
+    --color-gray-100: #E7E7E7;
+    --color-gray-200: #D1D1D1;
+    --color-gray-300: #B0B0B0;
+    --color-gray-400: #888888;
+    --color-gray-500: #6D6D6D;
+    --color-gray-600: #5D5D5D;
+    --color-gray-700: #4F4F4F;
+    --color-gray-800: #454545;
+    --color-gray-900: #000000;
+
+    /* Brand / Backgrounds */
+    --color-bg-app: #F0F0F0;
+    --color-bg-alt: #FAFAFA;
+
+    /* Blue / Info */
+    --color-blue-50: #EFF6FF;
+    --color-blue-500: #3B82F6;
+    --color-blue-600: #2563EB;
+
+    /* Green / Success */
+    --color-emerald-500: #10B981;
+    --color-emerald-600: #059669;
+
+    /* Orange / Warning */
+    --color-amber-50: #FFFBEB;
+    --color-amber-500: #F59E0B;
+    --color-amber-600: #D97706;
+
+    /* Purple / Special Status */
+    --color-violet-50: #F5F3FF;
+    --color-violet-500: #8B5CF6;
+    --color-violet-600: #7C3AED;
+
+    /* =========================================
+     2. Semantic Tokens (Usage Definitions)
+     ========================================= */
+
+    /* Brand / Primary Axis */
+    --brand-primary: var(--color-gray-900);
+    --brand-primary-hover: var(--color-gray-700);
+    --brand-primary-subtle: var(--color-gray-800);
+    --brand-on-primary: var(--color-white);
+
+    /* Surfaces */
+    --bg-app: var(--color-bg-app);
+    --bg-surface: var(--color-white);
+    --bg-surface-subtle: var(--color-gray-100);
+    --bg-surface-alt: var(--color-bg-alt);
+    --bg-input-disabled: var(--color-gray-50);
+    --bg-overlay-success: var(--color-emerald-500);
+
+    /* Text & Icons */
+    --text-primary: var(--color-gray-900);
+    --text-secondary: var(--color-gray-700);
+    --text-tertiary: var(--color-gray-500);
+    --text-muted: var(--color-gray-400);
+    --text-inverse: var(--color-white);
+    --text-disabled: var(--color-gray-350);
+
+    /* Borders */
+    --border-default: var(--color-gray-200);
+    --border-card: var(--color-gray-300);
+    --border-active: var(--color-gray-900);
+    --border-focus: var(--color-gray-900);
+
+    /* Actions */
+    --action-primary-bg: var(--brand-primary);
+    --action-primary-text: var(--brand-on-primary);
+    --action-primary-hover: var(--brand-primary-hover);
+
+    --action-success-bg: var(--color-emerald-500);
+    --action-success-text: var(--color-white);
+    --action-success-hover: var(--color-emerald-600);
+
+    --action-disabled-bg: var(--color-gray-200);
+    --action-disabled-text: var(--color-gray-500);
+
+    /* Status */
+    /* Neutral / Livre */
+    --status-neutral-bg: var(--color-gray-100);
+    --status-neutral-fg: var(--color-gray-700);
+    --status-neutral-border: var(--color-gray-200);
+    --status-neutral-dot: var(--color-gray-400);
+
+    /* Info / Ocupada */
+    --status-info-bg: var(--color-blue-50);
+    --status-info-fg: var(--color-blue-600);
+    --status-info-border: var(--color-blue-500);
+    --status-info-dot: var(--color-blue-500);
+
+    /* Warning / Encerrando */
+    --status-warning-bg: var(--color-amber-50);
+    --status-warning-fg: var(--color-amber-600);
+    --status-warning-border: var(--color-amber-500);
+    --status-warning-dot: var(--color-amber-500);
+
+    /* Purple / Encerrada */
+    --status-purple-bg: var(--color-violet-50);
+    --status-purple-fg: var(--color-violet-600);
+    --status-purple-border: var(--color-violet-500);
+    --status-purple-dot: var(--color-violet-500);
+
+    /* Effects */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* Card hover */
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-focus: 0 0 0 2px rgba(17, 24, 39, 0.15);
+}
