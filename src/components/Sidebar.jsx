@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Sidebar.css';
+import { SidebarDetail } from './SidebarDetail';
 
 // Icons
 const SearchIcon = () => (
@@ -112,9 +113,16 @@ export const Sidebar = (props) => {
 
     const handleMesaKeyDown = (e) => {
         if (e.key === 'Enter') {
-            const exactMatch = filteredTables.find(t => t.name.toLowerCase() === tableName.toLowerCase());
-            if (exactMatch) {
-                handleSelectTable(exactMatch);
+            // First try finding by ID explicitly (e.g. user typed "5" -> matches ID 5)
+            const matchById = availableTables.find(t => t.id.toString() === tableName.trim());
+
+            // Then try exact name match
+            const exactNameMatch = filteredTables.find(t => t.name.toLowerCase() === tableName.toLowerCase());
+
+            if (matchById) {
+                handleSelectTable(matchById);
+            } else if (exactNameMatch) {
+                handleSelectTable(exactNameMatch);
             } else if (filteredTables.length === 1) {
                 handleSelectTable(filteredTables[0]);
             }
@@ -147,6 +155,8 @@ export const Sidebar = (props) => {
 
 
 
+
+
     // State for View Mode: 'home' | 'create_order'
     const [viewMode, setViewMode] = useState('home');
 
@@ -172,8 +182,40 @@ export const Sidebar = (props) => {
 
 
     const handleStartOrder = () => {
+        // Reset Form State
+        setTableName('');
+        setSelectedTable(null);
+        setShowDropdown(false);
+        setIdGarcom(['', '', '', '']);
+        setSenha(['', '', '', '']);
+        setAuthStatus('idle');
+        setPedidoCode(['', '', '', '']);
+        setCodeStatus('idle');
+        setIsOrderVisible(false);
+
         setViewMode('create_order');
+        // Auto-focus the table input after render
+        setTimeout(() => {
+            const input = document.querySelector('.mesa-input');
+            if (input) input.focus();
+        }, 100);
     };
+
+    // Global Key Listener for Numpad *
+    useEffect(() => {
+        const handleGlobalKeyDown = (e) => {
+            // Check for Numpad * or Shift+8 (*)
+            if (e.key === '*' || e.code === 'NumpadMultiply') {
+                if (viewMode === 'home') {
+                    e.preventDefault();
+                    handleStartOrder();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleGlobalKeyDown);
+        return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    }, [viewMode]);
 
     // Derived State for Step Enforcement
     const isTableSelected = !!selectedTable;
@@ -207,144 +249,9 @@ export const Sidebar = (props) => {
     // --- RENDER HELPERS ---
 
     // Helper for Detail View
+    // Helper for Detail View
     if (props.activeTable) {
-        return (
-            <aside className="sidebar-container">
-                {/* 1. Detail Header */}
-                <div className="sidebar-header-section detail-header">
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <div className="mesa-tag-black">Mesa {props.activeTable.id}</div>
-                            <div className={`status-badge-sm status-${props.activeTable.status.toLowerCase()}`}>
-                                <span className="status-dot-sm"></span>
-                                {props.activeTable.status}
-                            </div>
-                            <span className="time-active">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4, position: 'relative', top: 1 }}>
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                </svg>
-                                Ativa há 1h44
-                            </span>
-                        </div>
-                        <div className="header-total">
-                            <span className="header-total-label">Total Parcial</span>
-                            <span className="header-total-value">R$ {props.activeTable.amount}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 2. Content Scrollable */}
-                <div className="sidebar-content-area" style={{ padding: 0 }}>
-
-                    {/* Maestro Section */}
-                    <div className="maestro-section">
-                        <div className="maestro-header">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 8 }}>
-                                <path d="M12 2a10 10 0 1 0 10 10H12V2Z" />
-                                <path d="M12 2a10 10 0 0 1 10 10" />
-                                <path d="M12 12 2.1 12" />
-                            </svg>
-                            <span className="maestro-title">Sugestão do Maestro</span>
-                        </div>
-
-                        <div className="maestro-cards-scroll">
-                            {/* Card 1 */}
-                            <div className="maestro-card">
-                                <div className="card-top-tag">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
-                                    Prioridade Média
-                                </div>
-                                <div className="card-body">
-                                    <div className="card-icon-placeholder"></div>
-                                    <div className="card-texts">
-                                        <div className="card-title">Oferecer Bebida</div>
-                                        <div className="card-desc">Mesa sem pedido de bebida há 5min</div>
-                                    </div>
-                                </div>
-                                <div className="card-actions">
-                                    <button className="pill-btn">Coca-Cola</button>
-                                    <button className="pill-btn">Suco de Laranja</button>
-                                    <button className="pill-btn">Água com Gás</button>
-                                    <button className="pill-btn">Moscow Mule</button>
-                                </div>
-                                <div className="card-footer-actions">
-                                    <button className="action-btn-black">
-                                        <CheckIcon /> Marcar como visto
-                                    </button>
-                                    <button className="action-btn-gray">
-                                        × Ignorar
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Card 2 (Partial) */}
-                            <div className="maestro-card">
-                                <div className="card-top-tag">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
-                                    Prioridade Média
-                                </div>
-                                <div className="card-body">
-                                    <div className="card-icon-placeholder"></div>
-                                    <div className="card-texts">
-                                        <div className="card-title">Oferecer Sobremesa</div>
-                                        <div className="card-desc">Prato principal servido há 40min</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Operational Details */}
-                    <div className="details-section">
-                        <h3 className="section-title">Detalhes Operacionais</h3>
-                        <div className="operational-info-row">
-                            <span className="info-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4, position: 'relative', top: 1 }}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                Ativa há 1h44
-                            </span>
-                            <span className="dot-separator">•</span>
-                            <span className="info-item">1 Pedido</span>
-                            <span className="dot-separator">•</span>
-                            <span className="info-item">0 itens consumidos</span>
-                            <span className="dot-separator">•</span>
-                            <span className="waiter-tag">Nome do Garçom</span>
-                        </div>
-                    </div>
-
-                    <div className="divider-full"></div>
-
-                    {/* Items Section */}
-                    <div className="items-section">
-                        <h3 className="section-title">Itens na Mesa</h3>
-                        <div className="items-grid">
-                            <span className="item-pill">1x Coca-Cola</span>
-                            <span className="item-pill">1x Suco de Laranja</span>
-                            <span className="item-pill">1x Água com Gás</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                            <span className="item-pill">2x Moscow Mule</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* 3. Footer */}
-                <div className="sidebar-footer-section" style={{ justifyContent: 'space-between' }}>
-                    <div className="footer-total-col">
-                        <span className="total-label-sm">Total Acumulado</span>
-                        <span className="total-amount-lg">R$ {props.activeTable.amount}</span>
-                    </div>
-                    <button className="close-account-btn" onClick={props.onClose}>
-                        <CheckIcon /> Fechar conta
-                    </button>
-                </div>
-            </aside>
-        );
+        return <SidebarDetail table={props.activeTable} />;
     }
 
     return (
@@ -361,22 +268,28 @@ export const Sidebar = (props) => {
             {viewMode === 'home' ? (
                 // --- HOME VIEW ---
                 <div className="sidebar-home-wrapper">
-                    {/* Top Section: Table Prompt */}
+                    {/* Top Section: Create Order */}
                     <div className="home-section top">
-                        <div className="home-icon-wrapper">
-                            <SmileyFaceIcon color="var(--text-primary)" />
+                        <div className="home-content-centered">
+                            <h3 className="home-title">Pronto para<br />lançar um pedido?</h3>
+                            <p className="home-subtitle">Use o código da mesa para<br />registrar o pedido do cliente.</p>
+                            <button className="home-action-btn-black" onClick={handleStartOrder}>
+                                Lançar pedido
+                            </button>
                         </div>
-                        <h3 className="home-title">Clique em uma mesa para acompanhá-la</h3>
-                        <p className="home-subtitle">Ao clicar na mesa, você irá ver o que fazer para ela.</p>
+
+                        <div className="home-shortcut-hint">
+                            Para ser mais rápido, clica no <kbd className="shortcut-key">*</kbd> para começar a lançar.
+                        </div>
                     </div>
 
-                    {/* Bottom Section: Order Prompt */}
+                    {/* Bottom Section: Table Select */}
                     <div className="home-section bottom">
-                        <h3 className="home-title">Quero lançar um pedido!</h3>
-                        <p className="home-subtitle">Anote o pedido do cliente quando estiver com o código em mãos.</p>
-                        <button className="home-action-btn" onClick={handleStartOrder}>
-                            Lançar um Pedido
-                        </button>
+                        <div className="home-icon-wrapper">
+                            <img src="/icon-menux.svg" alt="Menux Icon" width="36" height="36" />
+                        </div>
+                        <h3 className="home-title">Selecione uma mesa</h3>
+                        <p className="home-subtitle">Ao selecionar uma mesa, você verá as ações disponíveis para ela.</p>
                     </div>
                 </div>
             ) : (

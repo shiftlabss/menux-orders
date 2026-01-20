@@ -274,6 +274,10 @@
     background-color: var(--bg-surface);
 }
 
+.sidebar-content-area.detail-content {
+    background-color: #F0F0F0;
+}
+
 /* Empty State - Centered Logic */
 .empty-state {
     margin: auto;
@@ -511,15 +515,47 @@
 
 .home-section.top {
     border-bottom: 1px solid var(--border-default);
+    justify-content: space-between;
+    /* To push hint to bottom */
+}
+
+.home-content-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    /* Take up available space to center virtually */
+    width: 100%;
+}
+
+.home-shortcut-hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+}
+
+.shortcut-key {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .home-section.bottom {
     background-color: var(--bg-surface-alt);
-    /* Slightly distinct or just white as per design, design looks white but separated */
 }
 
 .home-icon-wrapper {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     color: var(--text-primary);
 }
 
@@ -528,331 +564,47 @@
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 8px;
-    max-width: 240px;
+    max-width: 280px;
+    line-height: 1.3;
 }
 
 .home-subtitle {
     font-size: 14px;
     color: var(--text-tertiary);
-    max-width: 260px;
+    max-width: 280px;
     line-height: 1.5;
 }
 
-.home-action-btn {
+/* Updated Button Style */
+.home-action-btn-black {
     margin-top: 24px;
-    background-color: var(--action-primary-bg);
-    color: var(--action-primary-text);
-    height: 48px;
-    padding: 0 32px;
-    border-radius: 24px;
+    background-color: #000;
+    /* Force black as per design */
+    color: #fff;
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 100px;
+    /* Full pill */
     font-family: inherit;
     font-size: 14px;
     font-weight: 600;
     border: none;
     cursor: pointer;
     transition: transform 0.1s ease, background-color 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.home-action-btn:hover {
-    background-color: var(--action-primary-hover);
+.home-action-btn-black:hover {
+    background-color: #333;
     transform: scale(1.02);
 }
 
-.home-action-btn:active {
+.home-action-btn-black:active {
     transform: scale(0.98);
 }
 
 
-/* --- NEW: TABLE DETAIL VIEW STYLES --- */
 
-/* Detail Header */
-.sidebar-header-section.detail-header {
-    height: 80px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border-default);
-}
-
-.mesa-tag-black {
-    background-color: var(--color-black);
-    color: var(--color-white);
-    padding: 6px 12px;
-    border-radius: 100px;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-.status-badge-sm {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    border-radius: 100px;
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.status-badge-sm.status-ocupada {
-    background-color: var(--status-info-bg);
-    color: var(--status-info-fg);
-}
-
-.status-badge-sm.status-livre {
-    background-color: var(--status-neutral-bg);
-    color: var(--status-neutral-fg);
-}
-
-.status-dot-sm {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: currentColor;
-}
-
-.time-active {
-    font-size: 13px;
-    color: var(--text-tertiary);
-    display: flex;
-    align-items: center;
-}
-
-.header-total {
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-}
-
-.header-total-label {
-    font-size: 11px;
-    color: var(--text-tertiary);
-}
-
-.header-total-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-/* Maestro Section */
-.maestro-section {
-    background-color: var(--color-violet-50);
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-default);
-}
-
-.maestro-header {
-    display: flex;
-    align-items: center;
-    font-weight: 700;
-    color: var(--color-violet-600);
-    margin-bottom: 16px;
-}
-
-.maestro-cards-scroll {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    /* Space for scrollbar if any */
-    /* Hide scrollbar for cleaner look */
-    scrollbar-width: none;
-}
-
-.maestro-cards-scroll::-webkit-scrollbar {
-    display: none;
-}
-
-.maestro-card {
-    min-width: 280px;
-    background-color: var(--bg-surface);
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    border: 1px solid var(--border-default);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.card-top-tag {
-    align-self: flex-start;
-    background-color: var(--color-amber-50);
-    color: var(--color-amber-600);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.card-body {
-    display: flex;
-    gap: 12px;
-}
-
-.card-icon-placeholder {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--color-gray-100);
-    flex-shrink: 0;
-}
-
-.card-texts {
-    display: flex;
-    flex-direction: column;
-}
-
-.card-title {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text-primary);
-}
-
-.card-desc {
-    font-size: 13px;
-    color: var(--text-tertiary);
-    line-height: 1.3;
-}
-
-.card-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.pill-btn {
-    border: 1px solid var(--border-default);
-    background: var(--bg-surface);
-    border-radius: 100px;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s;
-}
-
-.pill-btn:hover {
-    background-color: var(--bg-surface-subtle);
-}
-
-.card-footer-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
-}
-
-.action-btn-black {
-    flex: 2;
-    background-color: var(--action-primary-bg);
-    color: var(--action-primary-text);
-    border: none;
-    border-radius: 100px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.action-btn-gray {
-    flex: 1;
-    background-color: var(--color-gray-100);
-    color: var(--text-primary);
-    border: none;
-    border-radius: 100px;
-    height: 36px;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-
-/* Operational Info Section */
-.details-section {
-    padding: 24px;
-}
-
-.section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 12px;
-}
-
-.operational-info-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text-tertiary);
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-}
-
-.dot-separator {
-    color: var(--border-default);
-    font-size: 20px;
-    line-height: 0;
-}
-
-.waiter-tag {
-    background-color: var(--color-violet-50);
-    color: var(--color-violet-600);
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-
-.divider-full {
-    height: 1px;
-    background-color: var(--border-default);
-    width: 100%;
-}
-
-/* Items Section */
-.items-section {
-    padding: 24px;
-    flex: 1;
-}
-
-.items-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.item-pill {
-    border: 1px solid var(--border-default);
-    background: var(--bg-surface);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-
-/* Detail Footer */
-.footer-total-col {
-    display: flex;
-    flex-direction: column;
-}
 
 .total-label-sm {
     font-size: 12px;
@@ -884,4 +636,22 @@
 
 .close-account-btn:hover {
     background-color: var(--color-violet-500);
+}
+
+/* Wizard Animations */
+.fade-in {
+    animation: fadeIn 0.4s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

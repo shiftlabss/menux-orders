@@ -22,10 +22,14 @@ function App() {
   // State for Table Detail View
   const [selectedTableId, setSelectedTableId] = useState(null);
 
+  // State for Table Search
+  const [searchTerm, setSearchTerm] = useState('');
+
   // State for Resizable Sidebar
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem('menuxSidebarWidth');
-    return saved ? parseInt(saved, 10) : 440;
+    const parsed = saved ? parseInt(saved, 10) : 654;
+    return Math.max(parsed, 654);
   });
 
   const [isResizing, setIsResizing] = useState(false);
@@ -42,10 +46,10 @@ function App() {
 
     const handleMouseMove = (e) => {
       // Calculate new width: Total Width - Mouse X (Right Sidebar)
-      const newWidth = window.innerWidth - e.clientX;
+      let newWidth = window.innerWidth - e.clientX;
 
       // Constraints
-      if (newWidth < 300) return;
+      if (newWidth < 654) newWidth = 654;
       if (newWidth > window.innerWidth * 0.8) return;
 
       setSidebarWidth(newWidth);
@@ -92,28 +96,42 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <div className="header-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: 8 }}>
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20Z" fill="currentColor" />
-            <path d="M11 7H13V15H11V7ZM11 17H13V19H11V17Z" fill="currentColor" />
-          </svg>
-          {/* Placeholder logo text based on image */}
-          <span style={{ fontWeight: 'bold', fontSize: '18px' }}>menux</span>
+          <img src="/logo-menux.svg" alt="menux" style={{ height: '24px' }} />
         </div>
       </header>
 
       <main className="main-content">
         {/* Left Section: Table Grid - Grows to fill remaining space */}
         <div className="tables-section" style={{ flex: 1 }}>
-          <div className="tables-grid">
-            {tables.map((table) => (
-              <TableCard
-                key={table.id}
-                id={table.id}
-                status={table.status}
-                amount={table.amount}
-                onClick={() => handleTableClick(table.id)}
+          {/* Search Bar */}
+          <div className="tables-search-wrapper">
+            <div className="search-input-container">
+              <svg className="search-icon-sm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar mesa..."
+                className="tables-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-            ))}
+            </div>
+          </div>
+
+          <div className="tables-grid">
+            {tables
+              .filter(table => table.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map((table) => (
+                <TableCard
+                  key={table.id}
+                  id={table.id}
+                  status={table.status}
+                  amount={table.amount}
+                  onClick={() => handleTableClick(table.id)}
+                />
+              ))}
           </div>
         </div>
 

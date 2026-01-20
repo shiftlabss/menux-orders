@@ -1,0 +1,419 @@
+/* SidebarDetail.css */
+
+/* Container */
+.sidebar-detail-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: #F9FAFB;
+    /* Light gray background for whole sidebar */
+    /* Removed Inter to inherit Global Bricolage */
+}
+
+/* 1. Header Section */
+.detail-header-section {
+    padding: 16px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.header-left-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-pill {
+    background-color: #000;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 100px;
+}
+
+/* Adjusted for Design Tokens match */
+.status-text {
+    background-color: var(--status-info-bg);
+    /* #EFF6FF */
+    color: var(--status-info-fg);
+    /* #2563EB */
+    font-weight: 600;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ... existing separator ... */
+
+.separator {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+/* ... existing code ... */
+
+/* Rule removed, merged below */
+
+.time-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #6B7280;
+    /* Gray 500 */
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.header-total-group {
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.header-total-label {
+    font-size: 12px;
+    color: #999999;
+    font-weight: 500;
+}
+
+.header-total-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* 2. Maestro Section */
+.detail-maestro-section {
+    background-color: #F5F3FF;
+    /* Very light purple bg */
+    padding: 16px 20px 24px 20px;
+    border-bottom: 1px solid #E5E7EB;
+    flex-shrink: 0;
+}
+
+.maestro-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.maestro-title-text {
+    color: #4F46E5;
+    /* Indigo 600 */
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.maestro-icon-custom {
+    width: 20px;
+    height: 20px;
+    background-color: #4F46E5;
+    -webkit-mask: url(/icon-menux.svg) no-repeat center;
+    mask: url(/icon-menux.svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+/* Maestro Scroll Container */
+.maestro-cards-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 4px;
+    /* Space for shadow */
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.maestro-cards-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Card Suggestion */
+.card-suggestion {
+    min-width: 320px;
+    max-width: 320px;
+    background-color: #fff;
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.priority-badge {
+    background-color: #FFF7ED;
+    /* Orange 50 */
+    color: #C2410C;
+    /* Orange 700 */
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.suggestion-content {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.suggestion-icon-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #E5E7EB;
+    /* Gray circle */
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.suggestion-text-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.suggestion-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.suggestion-reason {
+    font-size: 13px;
+    color: #6B7280;
+    margin: 2px 0 0 0;
+}
+
+/* Options Grid */
+.suggestion-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+    background-color: #F9FAFB;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px dashed #E5E7EB;
+}
+
+.option-pill {
+    background-color: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 6px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+}
+
+/* Actions */
+.card-footer-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-mark-seen {
+    flex: 1;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    height: 40px;
+    /* Increased height slightly for better touch target */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-ignore {
+    flex: 0.6;
+    background-color: transparent;
+    /* Ghost style */
+    color: #374151;
+    border: 1px solid #E5E7EB;
+    /* Subtle border for shape */
+    border-radius: 100px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Scroll Area for Content */
+.detail-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #F0F0F0;
+    padding-bottom: 20px;
+}
+
+/* 3. Operational Section */
+.detail-operational-section {
+    padding: 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.ops-inline-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #6B7280;
+}
+
+.op-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.waiter-badge {
+    background-color: #EEF2FF;
+    /* Indigo 50 */
+    color: #4F46E5;
+    /* Indigo 600 */
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* 4. Items Tags */
+/* 4. Items Tags */
+.detail-items-section {
+    padding: 20px;
+    border-top: 1px solid #E5E7EB;
+    background-color: #F0F0F0;
+    /* Slight gray to contrast with white above */
+}
+
+.items-tags-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.detail-items-section .section-title {
+    border-bottom: 2px solid #E5E7EB;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    /* Edge-to-edge trick */
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: block;
+    width: calc(100% + 40px);
+}
+
+.item-tag {
+    background-color: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* 5. Footer */
+.detail-footer-section {
+    padding: 20px;
+    background-color: #fff;
+    border-top: 1px solid #E5E7EB;
+    flex-shrink: 0;
+}
+
+.footer-content-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer-total-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-label-small {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-weight: 500;
+}
+
+.footer-amount-large {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.btn-close-account {
+    background-color: #6366F1;
+    /* Indigo 500 */
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    height: 44px;
+    padding: 0 24px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+}
+
+.btn-icon-circle {
+    background-color: rgba(255, 255, 255, 0.2);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-circle svg {
+    width: 12px;
+    height: 12px;
+}

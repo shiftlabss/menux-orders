@@ -52,6 +52,10 @@ body {
   Left Section: Tables
   Grows to fill remaining space
 */
+/*
+  Left Section: Tables
+  Grows to fill remaining space
+*/
 .tables-section {
   flex: 1;
   /* Dynamic width */
@@ -62,12 +66,55 @@ body {
   padding: 24px;
   /* Padding inside the gray area */
   position: relative;
+  gap: 24px;
+  /* Added gap between search and grid */
+}
+
+/* Search Bar Styles */
+.tables-search-wrapper {
+  flex-shrink: 0;
+}
+
+.search-input-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  padding: 10px 16px;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.search-input-container:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--color-violet-100);
+}
+
+.search-icon-sm {
+  color: var(--text-tertiary);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.tables-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.tables-search-input::placeholder {
+  color: var(--text-tertiary);
 }
 
 .tables-grid {
   display: grid;
   /* Keep standard 3 columns or responsive */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(256px, 1fr));
   grid-auto-rows: 164px;
   gap: 20px;
   overflow-y: auto;
