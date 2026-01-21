@@ -106,7 +106,11 @@ const LogOutIcon = () => (
     </svg>
 );
 
-export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }) => {
+// export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }) => {
+//     const [orders, setOrders] = useState([]);
+//     const [loading, setLoading] = useState(false);
+
+export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -159,7 +163,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
         }
     });
 
-    const items = Object.values(itemsHelper);
+    // const items = Object.values(itemsHelper);
     // const [items, setItems] = useState([
     //     { id: 1, name: 'Coca-Cola', qty: 1 },
     //     { id: 2, name: 'Suco de Laranja', qty: 1 },
@@ -195,7 +199,47 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
             console.error("Failed to delete item", error);
             throw error; // Re-throw so modal handles error display
         }
-    };
+    }
+    // }, [table?.id]);
+
+    // // Data Processing
+    // const duration = '...'; // TODO: Calculate from openedAt
+    // const total = table.amount || 'R$ 0,00';
+
+    // Find waiter name from the first order or table data
+    // The table object from `tableService` has `waiterId`, but not name. 
+    // The order object usually has `waiter` relation? Let's check. 
+    // If not, we might only show ID or "Garçom"
+    // const firstOrder = orders[0];
+    // const waiterName = firstOrder?.waiter?.name || 'Garçom';
+
+    // Aggregate Items
+    // const itemsHelper = {};
+    orders.forEach(order => {
+        if (order.items) {
+            order.items.forEach(item => {
+                // Adjust property access based on actual API response
+                // Assuming: item.menuItem.name or item.name
+                const name = item.menuItem?.name || item.name || 'Item';
+                const price = Number(item.price || item.unitPrice || 0);
+                const key = item.menuItemId || name;
+
+                if (!itemsHelper[key]) {
+                    itemsHelper[key] = {
+                        name,
+                        qty: 0,
+                        price: price,
+                        // Keep track of total value for this item type
+                        totalValue: 0
+                    };
+                }
+                itemsHelper[key].qty += item.quantity;
+                itemsHelper[key].totalValue += (price * item.quantity);
+            });
+        }
+    });
+
+    const items = Object.values(itemsHelper);
 
     const scrollRef = useRef(null);
 
@@ -365,6 +409,39 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                                     </button>
                                 </div>
                             </div>
+                            <span className="mesa-id-badge">{table.name}</span>
+                            <span className="status-pill-blue">
+                                <span className="status-dot-blue"></span>
+                                Ocupada
+                            </span>
+                            <div className="header-time-text">
+                                • Ativa há {duration}
+                            </div>
+                        </div>
+                        <div className="header-right-group">
+                            <div className="total-label-xs">Total Parcial</div>
+                            <div className="total-value-md">{total}</div>
+                        </div>
+                    </div>
+
+                    {/* 4. Items List */}
+                    <div className="detail-items-section">
+                        <h3 className="section-title-bold" style={{ marginBottom: 12 }}>Itens na Mesa</h3>
+                        <div className="items-list-vertical">
+                            {items.map((item, idx) => (
+                                <div className="item-row-operational" key={idx}>
+                                    <div className="item-left-block">
+                                        <div className="item-qty-badge-op">{item.qty}</div>
+                                        <div className="item-meta-block">
+                                            <span className="item-name-op">{item.name}</span>
+                                            <span className="item-time-op">{waiterName}</span>
+                                        </div>
+                                    </div>
+                                    <div className="item-price-op">
+                                        R$ {item.totalValue.toFixed(2).replace('.', ',')}
+                                    </div>
+                                </div>
+                            ))}
 
                             {/* Card 2 (Duplicate for scroll effect) */}
                             <div className="maestro-card-pro">
@@ -482,4 +559,5 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
             }
         </>
     );
+
 };

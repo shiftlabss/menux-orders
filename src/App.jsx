@@ -20,6 +20,10 @@ function App() {
     });
   });
 
+  // State for Tables
+  // const [tables, setTables] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+
   // Fetch Tables
   const fetchTables = useCallback(async () => {
     try {
@@ -94,6 +98,9 @@ function App() {
     timeoutId = setTimeout(poll, 30000);
 
     return () => clearTimeout(timeoutId);
+
+    // const interval = setInterval(fetchTables, 5000);
+    // return () => clearInterval(interval);
   }, [fetchTables]);
 
   const handleOrderConfirmed = (tableId) => {

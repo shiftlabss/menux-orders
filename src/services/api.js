@@ -9,7 +9,7 @@ export const api = {
             ...options.headers,
         };
 
-        if (token && !headers['Authorization']) {
+        if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
