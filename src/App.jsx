@@ -5,10 +5,19 @@ import './App.css';
 
 function App() {
   // Initial Dummy Data
-  const [tables, setTables] = useState(() => Array.from({ length: 40 }, (_, index) => {
-    const id = index + 1;
-    return { id, status: 'Livre', amount: '0,00', name: `Mesa ${id}` };
-  }));
+  const [tables, setTables] = useState(() => {
+    const saved = localStorage.getItem('menuxTables');
+    if (saved) return JSON.parse(saved);
+    return Array.from({ length: 40 }, (_, index) => {
+      const id = index + 1;
+      return { id, status: 'Livre', amount: '0,00', name: `Mesa ${id}` };
+    });
+  });
+
+  // Persist Tables
+  useEffect(() => {
+    localStorage.setItem('menuxTables', JSON.stringify(tables));
+  }, [tables]);
 
   const handleOrderConfirmed = (tableId) => {
     setTables(prevTables => prevTables.map(table => {

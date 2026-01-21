@@ -45,7 +45,7 @@ body {
   display: flex;
   height: calc(100vh - var(--header-height));
   /* Ensure explicit height for children to scroll */
-  overflow: hidden;
+  overflow: visible;
 }
 
 /*
@@ -68,6 +68,13 @@ body {
   position: relative;
   gap: 24px;
   /* Added gap between search and grid */
+}
+
+/* Right Section: Resizable Sidebar */
+.sidebar-section {
+  position: relative;
+  z-index: 20;
+  height: 100%;
 }
 
 /* Search Bar Styles */

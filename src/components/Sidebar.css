@@ -6,7 +6,7 @@
     flex-direction: column;
     background-color: var(--bg-surface);
     /* Removed border-radius and border for edge-to-edge */
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* 1. Header: White */
@@ -176,6 +176,7 @@
     outline: none;
     color: var(--text-primary);
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .pin-box:focus {
@@ -573,6 +574,11 @@
     color: var(--text-tertiary);
     max-width: 280px;
     line-height: 1.5;
+}
+
+.home-section.middle {
+    border-bottom: 1px solid var(--border-default);
+    justify-content: space-between;
 }
 
 /* Updated Button Style */
