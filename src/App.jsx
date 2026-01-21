@@ -1,31 +1,81 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { TableCard } from './components/TableCard';
 import { Sidebar } from './components/Sidebar';
+import { tableService } from './services/tableService';
+import { authService } from './services/authService';
+import { restaurantService } from './services/restaurantService';
 import './App.css';
 
 function App() {
-  // Initial Dummy Data
-  const [tables, setTables] = useState(() => {
-    const saved = localStorage.getItem('menuxTables');
-    if (saved) return JSON.parse(saved);
-    return Array.from({ length: 40 }, (_, index) => {
-      const id = index + 1;
-      return { id, status: 'Livre', amount: '0,00', name: `Mesa ${id}` };
-    });
-  });
+  // State for Tables
+  const [tables, setTables] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Persist Tables
+  // Fetch Tables
+  const fetchTables = useCallback(async () => {
+    try {
+      const data = await tableService.getTables();
+      // Sort tables by Number
+      setTables(data.sort((a, b) => a.number - b.number));
+    } catch (error) {
+      console.error("Error fetching tables:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Initialize App Context (Restaurant & Auth)
   useEffect(() => {
-    localStorage.setItem('menuxTables', JSON.stringify(tables));
-  }, [tables]);
+    const init = async () => {
+      try {
+        // 1. Identify Slug
+        let slug = 'menux-default'; // Default for localhost/dev
+        const hostname = window.location.hostname;
+
+        // If subdomain exists (e.g. tenant.domain.com)
+        const parts = hostname.split('.');
+        if (parts.length > 2 && parts[0] !== 'www') {
+          slug = parts[0];
+        }
+
+        // 2. Fetch Restaurant Details
+        const restaurant = await restaurantService.getBySlug(slug);
+
+        if (restaurant && restaurant.id) {
+          localStorage.setItem('restaurantId', restaurant.id);
+          console.log(`Restaurant Context Loaded: ${restaurant.name} (${restaurant.id})`);
+        }
+
+        // 3. Auto-login (Dev/Admin)
+        if (!authService.isAuthenticated()) {
+          try {
+            await authService.login('admin@admin.com', 'admin');
+          } catch (e) {
+            console.error("Auto-login failed", e);
+          }
+        }
+
+        // 4. Fetch Tables
+        fetchTables();
+
+      } catch (error) {
+        console.error("Initialization Failed:", error);
+        setIsLoading(false);
+      }
+    };
+
+    init();
+  }, [fetchTables]);
+
+  // Poll every 5 seconds to keep status updated
+  useEffect(() => {
+    const interval = setInterval(fetchTables, 5000);
+    return () => clearInterval(interval);
+  }, [fetchTables]);
 
   const handleOrderConfirmed = (tableId) => {
-    setTables(prevTables => prevTables.map(table => {
-      if (table.id === tableId) {
-        return { ...table, status: 'Ocupada', amount: '123,00' };
-      }
-      return table;
-    }));
+    // Refresh tables after order confirmation
+    fetchTables();
   };
 
   // State for Table Detail View
@@ -135,7 +185,7 @@ function App() {
               .map((table) => (
                 <TableCard
                   key={table.id}
-                  id={table.id}
+                  id={table.number}
                   status={table.status}
                   amount={table.amount}
                   onClick={() => handleTableClick(table.id)}

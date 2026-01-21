@@ -61,6 +61,26 @@
     border-radius: 50%;
 }
 
+.status-pill-green {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--color-green-50);
+    color: var(--color-green-600);
+    padding: 0 16px;
+    height: 32px;
+    border-radius: 100px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.status-dot-green {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-green-600);
+    border-radius: 50%;
+}
+
 .header-time-text {
     font-size: 14px;
     color: var(--text-tertiary);
@@ -242,7 +262,6 @@
     font-family: inherit;
 }
 
-/* 6. Action Modal Style */
 /* 6. Action Modal (Slide Up Style) */
 .action-modal-overlay {
     position: absolute;
@@ -337,16 +356,12 @@
 }
 
 /* Reuse search and list styles */
-
-/* Reuse search and list styles */
 .search-bar-container {
     padding: 0;
     /* Padding handled by children or inline for flexibility */
     border-bottom: 1px solid var(--border-default);
     background-color: var(--bg-surface);
 }
-
-/* Old search style removed */
 
 .table-list-vertical {
     flex: 1;

@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { tableService } from '../services/tableService';
 import './SidebarDetail.css';
 
 // Icons
@@ -79,22 +80,59 @@ const TransferIcon = () => (
 // (Removed unused Icon components if any, keeping used ones)
 
 export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
-    // Mock Data
-    const duration = '1h44';
-    const total = 'R$ 123.00';
-    const waiterName = 'Nome do Garçom';
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const items = [
-        { name: 'Coca-Cola', qty: 1 },
-        { name: 'Suco de Laranja', qty: 1 },
-        { name: 'Água com Gás', qty: 1 },
-        { name: 'Moscow Mule', qty: 2 },
-        { name: 'Moscow Mule', qty: 2 },
-        { name: 'Moscow Mule', qty: 2 },
-        { name: 'Moscow Mule', qty: 2 },
-        { name: 'Moscow Mule', qty: 2 },
-        { name: 'Moscow Mule', qty: 2 },
-    ];
+    useEffect(() => {
+        if (table?.id) {
+            setLoading(true);
+            tableService.getTableOrders(table.id)
+                .then(setOrders)
+                .catch(console.error)
+                .finally(() => setLoading(false));
+        } else {
+            setOrders([]);
+        }
+    }, [table?.id]);
+
+    // Data Processing
+    const duration = '...'; // TODO: Calculate from openedAt
+    const total = table.amount || 'R$ 0,00';
+
+    // Find waiter name from the first order or table data
+    // The table object from `tableService` has `waiterId`, but not name. 
+    // The order object usually has `waiter` relation? Let's check. 
+    // If not, we might only show ID or "Garçom"
+    const firstOrder = orders[0];
+    const waiterName = firstOrder?.waiter?.name || 'Garçom';
+
+    // Aggregate Items
+    const itemsHelper = {};
+    orders.forEach(order => {
+        if (order.items) {
+            order.items.forEach(item => {
+                // Adjust property access based on actual API response
+                // Assuming: item.menuItem.name or item.name
+                const name = item.menuItem?.name || item.name || 'Item';
+                const price = Number(item.price || item.unitPrice || 0);
+                const key = item.menuItemId || name;
+
+                if (!itemsHelper[key]) {
+                    itemsHelper[key] = {
+                        name,
+                        qty: 0,
+                        price: price,
+                        // Keep track of total value for this item type
+                        totalValue: 0
+                    };
+                }
+                itemsHelper[key].qty += item.quantity;
+                itemsHelper[key].totalValue += (price * item.quantity);
+            });
+        }
+    });
+
+    const items = Object.values(itemsHelper);
 
     const scrollRef = useRef(null);
 
@@ -111,9 +149,9 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                         </svg>
                     </div>
                     <span className="mesa-id-badge">{table.name}</span>
-                    <span className="status-pill-blue">
-                        <span className="status-dot-blue"></span>
-                        Ocupada
+                    <span className={`status-pill-${table.status === 'Livre' ? 'green' : 'blue'}`}>
+                        <span className={`status-dot-${table.status === 'Livre' ? 'green' : 'blue'}`}></span>
+                        {table.status}
                     </span>
                     <div className="header-time-text">
                         • Ativa há {duration}
@@ -221,11 +259,11 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                                     <div className="item-qty-badge-op">{item.qty}</div>
                                     <div className="item-meta-block">
                                         <span className="item-name-op">{item.name}</span>
-                                        <span className="item-time-op">Pedido às 20:30 • {waiterName}</span>
+                                        <span className="item-time-op">{waiterName}</span>
                                     </div>
                                 </div>
                                 <div className="item-price-op">
-                                    R$ {(12 * item.qty).toFixed(2).replace('.', ',')}
+                                    R$ {item.totalValue.toFixed(2).replace('.', ',')}
                                 </div>
                             </div>
                         ))}

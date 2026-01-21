@@ -1,0 +1,77 @@
+
+> menux-backend-node@1.0.0 seed:orders
+> DEBUG=typeorm:query ts-node -r tsconfig-paths/register src/infrastructure/database/seeds/seed-order-data.ts
+
+[90m[4mquery:[24m[39m [94mSELECT[0m [95mversion[0m[37m([0m[37m)[0m
+[90m[4mquery:[24m[39m [94mSELECT[0m [37m*[0m [94mFROM[0m [95mcurrent_schema[0m[37m([0m[37m)[0m
+[90m[4mquery:[24m[39m [94mCREATE[0m [37mEXTENSION[0m [94mIF[0m [94mNOT[0m [94mEXISTS[0m [37m"uuid-ossp"[0m
+📦 Database initialized
+[90m[4mquery:[24m[39m [94mSELECT[0m [37m"Restaurant"[0m[37m.[0m[37m"id"[0m [94mAS[0m [37m"Restaurant_id"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"name"[0m [94mAS[0m [37m"Restaurant_name"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"slug"[0m [94mAS[0m [37m"Restaurant_slug"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"cnpj"[0m [94mAS[0m [37m"Restaurant_cnpj"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"tradingName"[0m [94mAS[0m [37m"Restaurant_tradingName"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"corporateName"[0m [94mAS[0m [37m"Restaurant_corporateName"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"logoUrl"[0m [94mAS[0m [37m"Restaurant_logoUrl"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"description"[0m [94mAS[0m [37m"Restaurant_description"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"phone"[0m [94mAS[0m [37m"Restaurant_phone"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"email"[0m [94mAS[0m [37m"Restaurant_email"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"address"[0m [94mAS[0m [37m"Restaurant_address"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"openingHours"[0m [94mAS[0m [37m"Restaurant_openingHours"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"instagram"[0m [94mAS[0m [37m"Restaurant_instagram"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"facebook"[0m [94mAS[0m [37m"Restaurant_facebook"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"whatsapp"[0m [94mAS[0m [37m"Restaurant_whatsapp"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"website"[0m [94mAS[0m [37m"Restaurant_website"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"isActive"[0m [94mAS[0m [37m"Restaurant_isActive"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"createdAt"[0m [94mAS[0m [37m"Restaurant_createdAt"[0m[37m,[0m [37m"Restaurant"[0m[37m.[0m[37m"updatedAt"[0m [94mAS[0m [37m"Restaurant_updatedAt"[0m [94mFROM[0m [37m"restaurants"[0m [37m"Restaurant"[0m [94mWHERE[0m [37m([0m[37m([0m[37m"Restaurant"[0m[37m.[0m[37m"slug"[0m [37m=[0m [37m$[0m[32m1[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["menux-default"][0m
+Using restaurant: Menux Default Restaurant (93ee632d-e77a-402f-971c-331149e5343c)
+[90m[4mquery:[24m[39m [94mSELECT[0m [37m"Waiter"[0m[37m.[0m[37m"id"[0m [94mAS[0m [37m"Waiter_id"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"name"[0m [94mAS[0m [37m"Waiter_name"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"nickname"[0m [94mAS[0m [37m"Waiter_nickname"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"avatarUrl"[0m [94mAS[0m [37m"Waiter_avatarUrl"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"pinCode"[0m [94mAS[0m [37m"Waiter_pinCode"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"password"[0m [94mAS[0m [37m"Waiter_password"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"restaurantId"[0m [94mAS[0m [37m"Waiter_restaurantId"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"createdAt"[0m [94mAS[0m [37m"Waiter_createdAt"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"updatedAt"[0m [94mAS[0m [37m"Waiter_updatedAt"[0m[37m,[0m [37m"Waiter"[0m[37m.[0m[37m"restaurant_id"[0m [94mAS[0m [37m"Waiter_restaurant_id"[0m [94mFROM[0m [37m"waiters"[0m [37m"Waiter"[0m [94mWHERE[0m [37m([0m[37m([0m[37m"Waiter"[0m[37m.[0m[37m"restaurantId"[0m [37m=[0m [37m$[0m[32m1[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["93ee632d-e77a-402f-971c-331149e5343c"][0m
+[90m[4mquery:[24m[39m [94mSELECT[0m [37m"Table"[0m[37m.[0m[37m"id"[0m [94mAS[0m [37m"Table_id"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"number"[0m [94mAS[0m [37m"Table_number"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"status"[0m [94mAS[0m [37m"Table_status"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"priority"[0m [94mAS[0m [37m"Table_priority"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"capacity"[0m [94mAS[0m [37m"Table_capacity"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"currentPeople"[0m [94mAS[0m [37m"Table_currentPeople"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"openedAt"[0m [94mAS[0m [37m"Table_openedAt"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"closedAt"[0m [94mAS[0m [37m"Table_closedAt"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"restaurant_id"[0m [94mAS[0m [37m"Table_restaurant_id"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"waiter_id"[0m [94mAS[0m [37m"Table_waiter_id"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"createdAt"[0m [94mAS[0m [37m"Table_createdAt"[0m[37m,[0m [37m"Table"[0m[37m.[0m[37m"updatedAt"[0m [94mAS[0m [37m"Table_updatedAt"[0m [94mFROM[0m [37m"tables"[0m [37m"Table"[0m [94mWHERE[0m [37m([0m[37m([0m[37m"Table"[0m[37m.[0m[37m"restaurant_id"[0m [37m=[0m [37m$[0m[32m1[0m[37m)[0m[37m)[0m [90m-- PARAMETERS: ["93ee632d-e77a-402f-971c-331149e5343c"][0m
+[90m[4mquery:[24m[39m [37mSTART[0m [37mTRANSACTION[0m
+[90m[4mquery:[24m[39m [94mINSERT INTO[0m [37m"tables"[0m[37m([0m[37m"id"[0m[37m,[0m [37m"number"[0m[37m,[0m [37m"status"[0m[37m,[0m [37m"priority"[0m[37m,[0m [37m"capacity"[0m[37m,[0m [37m"currentPeople"[0m[37m,[0m [37m"openedAt"[0m[37m,[0m [37m"closedAt"[0m[37m,[0m [37m"restaurant_id"[0m[37m,[0m [37m"waiter_id"[0m[37m,[0m [37m"createdAt"[0m[37m,[0m [37m"updatedAt"[0m[37m)[0m [94mVALUES[0m [37m([0m[94mDEFAULT[0m[37m,[0m [37m$[0m[32m1[0m[37m,[0m [37m$[0m[32m2[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [37m$[0m[32m3[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [37m$[0m[32m4[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m)[0m [94mRETURNING[0m [37m"id"[0m[37m,[0m [37m"status"[0m[37m,[0m [37m"capacity"[0m[37m,[0m [37m"currentPeople"[0m[37m,[0m [37m"createdAt"[0m[37m,[0m [37m"updatedAt"[0m [90m-- PARAMETERS: [1,"FREE",2,"93ee632d-e77a-402f-971c-331149e5343c"][0m
+[4m[31mquery failed:[39m[24m [94mINSERT INTO[0m [37m"tables"[0m[37m([0m[37m"id"[0m[37m,[0m [37m"number"[0m[37m,[0m [37m"status"[0m[37m,[0m [37m"priority"[0m[37m,[0m [37m"capacity"[0m[37m,[0m [37m"currentPeople"[0m[37m,[0m [37m"openedAt"[0m[37m,[0m [37m"closedAt"[0m[37m,[0m [37m"restaurant_id"[0m[37m,[0m [37m"waiter_id"[0m[37m,[0m [37m"createdAt"[0m[37m,[0m [37m"updatedAt"[0m[37m)[0m [94mVALUES[0m [37m([0m[94mDEFAULT[0m[37m,[0m [37m$[0m[32m1[0m[37m,[0m [37m$[0m[32m2[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [37m$[0m[32m3[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [37m$[0m[32m4[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m)[0m [94mRETURNING[0m [37m"id"[0m[37m,[0m [37m"status"[0m[37m,[0m [37m"capacity"[0m[37m,[0m [37m"currentPeople"[0m[37m,[0m [37m"createdAt"[0m[37m,[0m [37m"updatedAt"[0m [90m-- PARAMETERS: [1,"FREE",2,"93ee632d-e77a-402f-971c-331149e5343c"][0m
+[4m[31merror:[39m[24m error: null value in column "restaurantId" of relation "tables" violates not-null constraint
+[90m[4mquery:[24m[39m [37mROLLBACK[0m
+❌ Error during seeding: QueryFailedError: null value in column "restaurantId" of relation "tables" violates not-null constraint
+    at PostgresQueryRunner.query (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/typeorm/src/driver/postgres/PostgresQueryRunner.ts:325:19)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async InsertQueryBuilder.execute (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/query-builder/InsertQueryBuilder.ts:164:33)
+    at async SubjectExecutor.executeInsertOperations (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/persistence/SubjectExecutor.ts:435:42)
+    at async SubjectExecutor.execute (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/persistence/SubjectExecutor.ts:137:9)
+    at async EntityPersistExecutor.execute (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/persistence/EntityPersistExecutor.ts:182:21)
+    at async seed (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/src/infrastructure/database/seeds/seed-order-data.ts:63:21) {
+  query: 'INSERT INTO "tables"("id", "number", "status", "priority", "capacity", "currentPeople", "openedAt", "closedAt", "restaurant_id", "waiter_id", "createdAt", "updatedAt") VALUES (DEFAULT, $1, $2, DEFAULT, $3, DEFAULT, DEFAULT, DEFAULT, $4, DEFAULT, DEFAULT, DEFAULT) RETURNING "id", "status", "capacity", "currentPeople", "createdAt", "updatedAt"',
+  parameters: [ 1, 'FREE', 2, '93ee632d-e77a-402f-971c-331149e5343c' ],
+  driverError: error: null value in column "restaurantId" of relation "tables" violates not-null constraint
+      at /Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/pg/lib/client.js:545:17
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async PostgresQueryRunner.query (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/typeorm/src/driver/postgres/PostgresQueryRunner.ts:254:25)
+      at async InsertQueryBuilder.execute (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/query-builder/InsertQueryBuilder.ts:164:33)
+      at async SubjectExecutor.executeInsertOperations (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/persistence/SubjectExecutor.ts:435:42)
+      at async SubjectExecutor.execute (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/persistence/SubjectExecutor.ts:137:9)
+      at async EntityPersistExecutor.execute (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/node_modules/src/persistence/EntityPersistExecutor.ts:182:21)
+      at async seed (/Users/pamplonicade/ShiftLabs/backoffice-menux/backend-node/src/infrastructure/database/seeds/seed-order-data.ts:63:21) {
+    length: 385,
+    severity: 'ERROR',
+    code: '23502',
+    detail: 'Failing row contains (900167d6-c1b2-4ef7-b745-4e28c28bf94a, 1, FREE, 2, 0, null, null, null, null, 2026-01-13 13:27:37.715276, 2026-01-13 13:27:37.715276, 93ee632d-e77a-402f-971c-331149e5343c, null, null).',
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'public',
+    table: 'tables',
+    column: 'restaurantId',
+    dataType: undefined,
+    constraint: undefined,
+    file: 'execMain.c',
+    line: '2023',
+    routine: 'ExecConstraints'
+  },
+  length: 385,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (900167d6-c1b2-4ef7-b745-4e28c28bf94a, 1, FREE, 2, 0, null, null, null, null, 2026-01-13 13:27:37.715276, 2026-01-13 13:27:37.715276, 93ee632d-e77a-402f-971c-331149e5343c, null, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'tables',
+  column: 'restaurantId',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2023',
+  routine: 'ExecConstraints'
+}
+npm notice
+npm notice New major version of npm available! 10.9.3 -> 11.7.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+npm notice To update run: npm install -g npm@11.7.0
+npm notice
