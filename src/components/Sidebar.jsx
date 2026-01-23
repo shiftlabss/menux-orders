@@ -41,6 +41,7 @@ export const Sidebar = (props) => {
 
     // New State for Order Logic
     const [waiterToken, setWaiterToken] = useState(null);
+    const [waiterInfo, setWaiterInfo] = useState(null); // { name, nickname }
     const [orderData, setOrderData] = useState(null);
 
     // Effect: Handle Active Table Selection from Parent
@@ -154,6 +155,14 @@ export const Sidebar = (props) => {
 
             if (response.token) {
                 setWaiterToken(response.token);
+                // Also store waiter info if available in response
+                // Assuming response structure: { token: '...', waiter: { name: '...', nickname: '...' } }
+                setWaiterInfo({
+                    name: response.waiter?.name,
+                    nickname: response.waiter?.nickname,
+                    id: response.waiter?.id
+                });
+
                 setAuthStatus('success');
                 // Auto focus code input after success
                 setTimeout(() => codeRefs.current[0]?.focus(), 100);
@@ -291,13 +300,15 @@ export const Sidebar = (props) => {
                     // Assuming name is like "Mesa 5" or just "5"
                     const tableNum = selectedTable ? parseInt(selectedTable.name.replace(/\D/g, '') || selectedTable.name) : null;
 
-                    await orderService.confirmByCode(code, tableNum, restId, waiterToken);
+                    await orderService.confirmByCode(code, tableNum, restId, waiterToken, waiterInfo);
 
                     // Success
                     setShowSuccessOverlay(true);
 
                     // Clear Data & Token immediately
+                    // Clear Data & Token immediately
                     setWaiterToken(null);
+                    setWaiterInfo(null);
                     setOrderData(null);
 
                     setTimeout(() => {
@@ -344,6 +355,7 @@ export const Sidebar = (props) => {
         setCodeStatus('idle');
         setIsOrderVisible(false);
         setWaiterToken(null);
+        setWaiterInfo(null);
         setOrderData(null);
 
         setViewMode('create_order');
@@ -480,6 +492,10 @@ export const Sidebar = (props) => {
             onGroup={handleOpenGroup}
             onTransfer={handleOpenTransfer}
             onBack={props.onClose}
+            onFinalize={() => {
+                if (props.onConfirmOrder) props.onConfirmOrder(props.activeTable.id);
+                props.onClose();
+            }}
         />;
     }
 

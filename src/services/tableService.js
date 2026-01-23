@@ -27,6 +27,11 @@ export const tableService = {
         // Usually for "current state" we might want only active ones.
         // Let's assume frontend filtering for now: status NOT 'FINISHED' or 'CANCELED'
         return orders.filter(o => !['FINISHED', 'CANCELED'].includes(o.status));
+    },
+
+    async releaseTable(tableId) {
+        const restaurantId = localStorage.getItem('restaurantId');
+        return api.post(`/tables/${tableId}/release?restaurantId=${restaurantId}`, {});
     }
 };
 

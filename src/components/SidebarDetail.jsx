@@ -86,9 +86,15 @@ const FlagIcon = () => (
 
 // (Removed unused Icon components if any, keeping used ones)
 
-// (Removed unused Icon components if any, keeping used ones)
+const LogOutIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+);
 
-export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
+export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -144,6 +150,23 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
     const items = Object.values(itemsHelper);
 
     const scrollRef = useRef(null);
+
+    const handleFinalize = async () => {
+        if (!table?.id) return;
+
+        try {
+            await tableService.releaseTable(table.id);
+            alert("Mesa finalizada e liberada com sucesso!");
+            if (onFinalize) {
+                onFinalize();
+            } else if (onBack) {
+                onBack();
+            }
+        } catch (error) {
+            console.error("Release Table error:", error);
+            alert("Erro ao finalizar mesa: " + error.message);
+        }
+    };
 
     return (
         <aside className="sidebar-detail-container" style={{ position: 'relative', overflow: 'visible' }}>
@@ -302,12 +325,12 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                     >
                         <TransferIcon /> Transferir Mesa
                     </button>
+
+                    <button className="btn-finish-red" onClick={handleFinalize}>
+                        <LogOutIcon /> Finalizar Mesa
+                    </button>
                     <button className="btn-close-purple">
                         <CircleCheckIcon /> Fechar conta
-                    </button>
-
-                    <button className="btn-finish-violet">
-                        <FlagIcon /> Finalizar Mesa
                     </button>
                 </div>
             </div>

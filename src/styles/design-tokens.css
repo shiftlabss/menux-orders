@@ -44,6 +44,17 @@
     --color-violet-500: #8B5CF6;
     --color-violet-600: #7C3AED;
 
+    /* Red / Danger */
+    --color-red-50: #FEF2F2;
+    --color-red-500: #EF4444;
+    --color-red-600: #DC2626;
+    --color-red-700: #B91C1C;
+
+    /* Green / Success (Standardizing) */
+    --color-green-50: #ECFDF5;
+    --color-green-600: #059669;
+    --color-green-700: #047857;
+
     /* =========================================
      2. Semantic Tokens (Usage Definitions)
      ========================================= */

@@ -10,10 +10,16 @@ export const orderService = {
         });
     },
 
-    confirmByCode(code, tableNumber, restaurantId, waiterToken) {
+    confirmByCode(code, tableNumber, restaurantId, waiterToken, waiterInfo) {
         return api.request(`/orders/confirm-by-code?restaurantId=${restaurantId}`, {
             method: 'POST',
-            body: JSON.stringify({ code, tableNumber }),
+            body: JSON.stringify({
+                code,
+                tableNumber,
+                waiterName: waiterInfo?.name,
+                waiterNickname: waiterInfo?.nickname,
+                waiterId: waiterInfo?.id
+            }),
             headers: {
                 'Authorization': `Bearer ${waiterToken}`
             }
