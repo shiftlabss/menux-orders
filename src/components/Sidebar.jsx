@@ -3,6 +3,7 @@ import './Sidebar.css';
 import { SidebarDetail } from './SidebarDetail';
 import { waiterService } from '../services/waiterService';
 import { orderService } from '../services/orderService';
+import { tableService } from '../services/tableService';
 
 // Icons
 const SearchIcon = () => (
@@ -43,31 +44,44 @@ export const Sidebar = (props) => {
     const [waiterToken, setWaiterToken] = useState(null);
     const [waiterInfo, setWaiterInfo] = useState(null); // { name, nickname }
     const [orderData, setOrderData] = useState(null);
+    const [activeTableItems, setActiveTableItems] = useState([]); // For displaying items in Transfer/Group views
+
+    // Track previous table ID to prevent view reset on polling updates
+    const prevTableIdRef = useRef(null);
 
     // Effect: Handle Active Table Selection from Parent
     useEffect(() => {
-        if (props.activeTable) {
-            if (props.activeTable.status === 'Livre') {
-                // Auto-start Create Order flow
-                setViewMode('create_order');
-                setSelectedTable(props.activeTable);
+        const currentId = props.activeTable?.id;
+        const prevId = prevTableIdRef.current;
 
-                // Reset Wizard State
-                setTableName('');
-                setIdGarcom(['', '', '', '']);
-                setSenha(['', '', '', '']);
-                setAuthStatus('idle');
-                setPedidoCode(['', '', '', '']);
-                setCodeStatus('idle');
-                setIsOrderVisible(false);
+        // Only react if the Table ID actually changed (user selected a new table)
+        // OR if we transitioned from No Table to Table (or vice versa)
+        if (currentId !== prevId) {
+            if (props.activeTable) {
+                if (props.activeTable.status === 'Livre') {
+                    // Auto-start Create Order flow
+                    setViewMode('create_order');
+                    setSelectedTable(props.activeTable);
+
+                    // Reset Wizard State
+                    setTableName('');
+                    setIdGarcom(['', '', '', '']);
+                    setSenha(['', '', '', '']);
+                    setAuthStatus('idle');
+                    setPedidoCode(['', '', '', '']);
+                    setCodeStatus('idle');
+                    setIsOrderVisible(false);
+                } else {
+                    // Show Detail Overview (default 'home' renders SidebarDetail if activeTable exists)
+                    setViewMode('home');
+                }
             } else {
-                // Show Detail Overview (default 'home' renders SidebarDetail if activeTable exists)
-                // We force 'home' to ensure we exit any other mode like 'create_order'
+                // If activeTable is cleared (e.g. Back button), ensure we go to Home
                 setViewMode('home');
             }
-        } else {
-            // If activeTable is cleared (e.g. Back button), ensure we go to Home
-            setViewMode('home');
+
+            // Update ref
+            prevTableIdRef.current = currentId;
         }
     }, [props.activeTable]);
 
@@ -289,6 +303,47 @@ export const Sidebar = (props) => {
 
 
 
+    const handleTransferConfirm = async () => {
+        if (!selectedTable) {
+            alert("Selecione a mesa de destino.");
+            return;
+        }
+        if (!isAuthFilled) {
+            alert("Informe o ID e senha do garçom.");
+            return;
+        }
+
+        const restId = localStorage.getItem('restaurantId');
+        // Extract numbers safely
+        const sourceTableNum = props.activeTable ? parseInt(String(props.activeTable.name).replace(/\D/g, '')) : null;
+        const destTableNum = selectedTable ? parseInt(String(selectedTable.name).replace(/\D/g, '')) : null;
+
+        const code = idGarcom.join('');
+        const pass = senha.join('');
+
+        try {
+            await tableService.transferTable({
+                restaurantId: restId,
+                sourceTableNumber: sourceTableNum,
+                destinationTableNumber: destTableNum,
+                waiterCode: code,
+                waiterPassword: pass
+            });
+
+            setShowSuccessOverlay(true);
+
+            setTimeout(() => {
+                setShowSuccessOverlay(false);
+                if (props.onConfirmOrder) props.onConfirmOrder(props.activeTable.id); // Refresh
+                props.onClose(); // Close Sidebar
+            }, 3000);
+
+        } catch (error) {
+            console.error("Transfer error:", error);
+            alert("Erro ao transferir: " + error.message);
+        }
+    };
+
     const handleFinalConfirm = async () => {
         if (viewMode === 'create_order') {
             // Confirm Order Flow
@@ -319,6 +374,41 @@ export const Sidebar = (props) => {
                 } catch (error) {
                     console.error("Confirm error:", error);
                     alert("Erro ao confirmar: " + error.message);
+                }
+            }
+        } else if (viewMode === 'transfer_table') {
+            // Transfer Table Flow
+            if (selectedTable && waiterToken) { // WaiterToken implies auth success if we reuse auth flow, 
+                // BUT payload asks for raw code/password. 
+                // We should probably rely on state variables `idGarcom` and `senha` directly if we force user to enter them.
+                // Let's use the explicit input values if available.
+
+                const restId = localStorage.getItem('restaurantId');
+                const sourceTableNum = parseInt(props.activeTable.name.replace(/\D/g, ''));
+                const destTableNum = parseInt(selectedTable.name.replace(/\D/g, '') || selectedTable.name);
+                const code = idGarcom.join('');
+                const pass = senha.join('');
+
+                try {
+                    await tableService.transferTable({
+                        restaurantId: restId,
+                        sourceTableNumber: sourceTableNum,
+                        destinationTableNumber: destTableNum,
+                        waiterCode: code,
+                        waiterPassword: pass
+                    });
+
+                    setShowSuccessOverlay(true);
+
+                    setTimeout(() => {
+                        setShowSuccessOverlay(false);
+                        if (props.onConfirmOrder) props.onConfirmOrder(props.activeTable.id); // Refresh
+                        props.onClose(); // Close Sidebar
+                    }, 3000);
+
+                } catch (error) {
+                    console.error("Transfer error:", error);
+                    alert("Erro ao transferir: " + error.message);
                 }
             }
         } else if (selectedTable && onConfirmOrder) {
@@ -461,11 +551,29 @@ export const Sidebar = (props) => {
     };
 
     const handleOpenTransfer = () => {
+        // Reset local wizard state
         setIdGarcom(['', '', '', '']);
         setSenha(['', '', '', '']);
         setAuthStatus('idle');
         setTableName('');
+        setSelectedTable(null); // Ensure no table is pre-selected as destination
+
+        // Fetch items for the active table to display in transfer view
+        if (props.activeTable?.id) {
+            tableService.getTableOrders(props.activeTable.id).then(orders => {
+                // Aggregate items
+                const allItems = [];
+                orders.forEach(o => {
+                    if (o.items) allItems.push(...o.items);
+                });
+                setActiveTableItems(allItems);
+            });
+        }
+
         setViewMode('transfer_table');
+        setTimeout(() => {
+            // Focus logic if needed
+        }, 30000);
     };
 
     const handleCancelAction = () => {
@@ -881,28 +989,73 @@ export const Sidebar = (props) => {
                         </div>
                     </div>
 
+                    {/* Auth Section for Transfer (Required by endpoint) */}
+                    <div className="sidebar-auth-section">
+                        <div className="section-row">
+                            <div className="input-group">
+                                <label className="input-label">Seu ID Garçom</label>
+                                <div className="pin-inputs">
+                                    {idGarcom.map((val, i) => (
+                                        <input
+                                            key={i}
+                                            className="pin-box"
+                                            value={val}
+                                            onChange={(e) => handlePinChange(i, e.target.value, setIdGarcom, idGarcom, idRefs)}
+                                            ref={el => idRefs.current[i] = el}
+                                            maxLength={1}
+                                        // Auto-focus next logic handles flow
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="input-group">
+                                <label className="input-label">Senha</label>
+                                <div className="pin-inputs">
+                                    {senha.map((val, i) => (
+                                        <input
+                                            key={i}
+                                            className="pin-box"
+                                            type="password"
+                                            value={val}
+                                            onChange={(e) => handlePinChange(i, e.target.value, setSenha, senha, senhaRefs)}
+                                            ref={el => senhaRefs.current[i] = el}
+                                            maxLength={1}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Items Audit Section */}
-                    <div className="sidebar-content-area" style={{ flex: 1, backgroundColor: 'var(--bg-surface-alt)', padding: '24px', overflowY: 'auto' }}>
+                    <div
+                        className="sidebar-content-area"
+                        style={{ flex: 1, backgroundColor: 'var(--bg-surface-alt)', padding: '24px', overflowY: 'auto' }}
+                    // Keep focus logic simple or remove standard blur triggers if interfering
+                    >
                         <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 16 }}>Itens a Transferir</h3>
 
                         {/* Active Table Items */}
                         <div style={{ marginBottom: 20 }}>
                             <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: 'var(--text-primary)' }}>De: {props.activeTable?.name}</div>
-                            {/* Mock Items */}
-                            {[1, 2, 3].map(i => (
-                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-default)', fontSize: 13 }}>
-                                    <span>1x Moscow Mule</span>
-                                    <span>R$ 24,00</span>
-                                </div>
-                            ))}
+                            {activeTableItems.length > 0 ? (
+                                activeTableItems.map((item, i) => (
+                                    <div key={item.id || i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-default)', fontSize: 13 }}>
+                                        <span>{item.quantity}x {item.menuItem?.name || item.name}</span>
+                                        <span>R$ {Number(item.price || item.unitPrice || 0).toFixed(2)}</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <div style={{ fontSize: 13, color: 'var(--text-tertiary)', fontStyle: 'italic' }}>Nenhum item encontrado nesta mesa.</div>
+                            )}
                         </div>
                     </div>
 
                     <div className="sidebar-footer-section">
                         <button
-                            className={`footer-btn ${selectedTable ? 'success' : 'disabled'}`}
-                            onClick={handleFinalConfirm}
-                            disabled={!selectedTable}
+                            className={`footer-btn ${selectedTable && isAuthFilled ? 'success' : 'disabled'}`}
+                            onClick={handleTransferConfirm}
+                            disabled={!selectedTable || !isAuthFilled}
                         >
                             <CheckIcon /> Confirmar Transferência
                         </button>

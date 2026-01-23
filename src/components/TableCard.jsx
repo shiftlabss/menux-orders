@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './TableCard.css';
 
-export const TableCard = ({ id, status = 'Livre', amount = '0,00', onClick }) => {
+export const TableCard = ({ id, status = 'Livre', amount = '0,00', onClick, isSelected }) => {
   // Normalize status to lowercase for CSS class mapping
   const statusKey = status.toLowerCase();
 
@@ -10,7 +10,7 @@ export const TableCard = ({ id, status = 'Livre', amount = '0,00', onClick }) =>
   const showDetails = statusKey !== 'livre';
 
   return (
-    <div className={`table-card status-${statusKey}`} onClick={onClick}>
+    <div className={`table-card status-${statusKey} ${isSelected ? 'selected' : ''}`} onClick={onClick}>
       <div className="card-header">
         <div className="table-number">{id}</div>
         <div className="status-badge">
@@ -39,4 +39,5 @@ TableCard.propTypes = {
   status: PropTypes.oneOf(['Livre', 'Ocupada', 'Encerrando', 'Encerrada']),
   amount: PropTypes.string,
   onClick: PropTypes.func,
+  isSelected: PropTypes.bool,
 };

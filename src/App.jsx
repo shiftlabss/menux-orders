@@ -203,6 +203,7 @@ function App() {
                   status={table.status}
                   amount={table.amount}
                   onClick={() => handleTableClick(table.id)}
+                  isSelected={selectedTableId === table.id}
                 />
               ))}
           </div>

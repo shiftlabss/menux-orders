@@ -32,6 +32,15 @@ export const tableService = {
     async releaseTable(tableId) {
         const restaurantId = localStorage.getItem('restaurantId');
         return api.post(`/tables/${tableId}/release?restaurantId=${restaurantId}`, {});
+    },
+
+    async transferTable(data) {
+        // data: { restaurantId, sourceTableNumber, destinationTableNumber, waiterCode, waiterPassword }
+        // Ensure restaurantId is set if not provided (though Sidebar should provide it)
+        if (!data.restaurantId) {
+            data.restaurantId = localStorage.getItem('restaurantId');
+        }
+        return api.post('/tables/transfer', data);
     }
 };
 

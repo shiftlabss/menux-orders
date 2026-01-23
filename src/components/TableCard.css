@@ -2,6 +2,7 @@
 .table-card {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-card);
+
     border-radius: 16px;
     /* Optimized radius */
     width: 100%;
@@ -14,6 +15,12 @@
     transition: all 0.2s ease;
     position: relative;
     justify-content: flex-start;
+}
+
+/* Selected State */
+.table-card.selected {
+    border-width: 2px;
+    border-color: var(--color-gray-900);
 }
 
 .table-card:hover {
