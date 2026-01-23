@@ -75,6 +75,15 @@ const TransferIcon = () => (
     </svg>
 );
 
+const FlagIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+);
+
 // (Removed unused Icon components if any, keeping used ones)
 
 // (Removed unused Icon components if any, keeping used ones)
@@ -279,22 +288,26 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                     <span className="footer-value">{total}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                    <button
+                    {/* <button
                         className="btn-action-footer"
                         onClick={onGroup}
                         title="Agrupar: Somar contas, mesas continuam existindo"
                     >
                         <GroupIcon /> Agrupar
-                    </button>
+                    </button> */}
                     <button
                         className="btn-action-footer"
                         onClick={onTransfer}
                         title="Transferir: Mover conta, mesa de origem deixa de existir"
                     >
-                        <TransferIcon /> Transferir
+                        <TransferIcon /> Transferir Mesa
                     </button>
                     <button className="btn-close-purple">
                         <CircleCheckIcon /> Fechar conta
+                    </button>
+
+                    <button className="btn-finish-violet">
+                        <FlagIcon /> Finalizar Mesa
                     </button>
                 </div>
             </div>

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Sidebar.css';
 import { SidebarDetail } from './SidebarDetail';
+import { waiterService } from '../services/waiterService';
+import { orderService } from '../services/orderService';
 
 // Icons
 const SearchIcon = () => (
@@ -36,6 +38,10 @@ export const Sidebar = (props) => {
     const [selectedTable, setSelectedTable] = useState(null);
     const [selectedGroupTables, setSelectedGroupTables] = useState([]); // Multi-select for grouping
     const [showDropdown, setShowDropdown] = useState(false);
+
+    // New State for Order Logic
+    const [waiterToken, setWaiterToken] = useState(null);
+    const [orderData, setOrderData] = useState(null);
 
     // Effect: Handle Active Table Selection from Parent
     useEffect(() => {
@@ -137,15 +143,26 @@ export const Sidebar = (props) => {
     };
 
     // Handle Auth Confirm
-    const handleAuthConfirm = () => {
+    const handleAuthConfirm = async () => {
         setAuthStatus('loading');
+        try {
+            const restId = localStorage.getItem('restaurantId');
+            const pin = idGarcom.join('');
+            const pass = senha.join('');
 
-        // Mock API call
-        setTimeout(() => {
-            setAuthStatus('success');
-            // Auto focus code input after success
-            setTimeout(() => codeRefs.current[0]?.focus(), 100);
-        }, 1500);
+            const response = await waiterService.auth(pin, pass, restId);
+
+            if (response.token) {
+                setWaiterToken(response.token);
+                setAuthStatus('success');
+                // Auto focus code input after success
+                setTimeout(() => codeRefs.current[0]?.focus(), 100);
+            }
+        } catch (error) {
+            console.error('Auth User error:', error);
+            setAuthStatus('idle'); // Allow retry? Or error state?
+            alert('Erro na autenticação: ' + error.message);
+        }
     };
 
     // ---- State: Order Code ----
@@ -155,10 +172,15 @@ export const Sidebar = (props) => {
     const footerBtnRef = useRef(null);
 
     // Handle Code Confirm
-    const handleCodeConfirm = () => {
+    const handleCodeConfirm = async () => {
         setCodeStatus('loading');
+        try {
+            const restId = localStorage.getItem('restaurantId');
+            const code = pedidoCode.join('');
 
-        setTimeout(() => {
+            const data = await orderService.getOrderByCode(code, restId, waiterToken);
+            setOrderData(data); // Store order data
+
             setCodeStatus('success');
             // Show order details *after* success state confirms
             setTimeout(() => {
@@ -166,7 +188,11 @@ export const Sidebar = (props) => {
                 // Focus Footer Button for final "Enter" confirmation
                 setTimeout(() => footerBtnRef.current?.focus(), 100);
             }, 500);
-        }, 1500);
+        } catch (error) {
+            console.error('Order Fetch error:', error);
+            setCodeStatus('idle');
+            alert('Erro ao buscar pedido: ' + error.message);
+        }
     };
 
     // ---- State: Product Launch ----
@@ -254,8 +280,42 @@ export const Sidebar = (props) => {
 
 
 
-    const handleFinalConfirm = () => {
-        if (selectedTable && onConfirmOrder) {
+    const handleFinalConfirm = async () => {
+        if (viewMode === 'create_order') {
+            // Confirm Order Flow
+            if (orderData && waiterToken) {
+                try {
+                    const restId = localStorage.getItem('restaurantId');
+                    const code = pedidoCode.join('');
+                    // Extract numeric part from table name or use id if it matches user expectation
+                    // Assuming name is like "Mesa 5" or just "5"
+                    const tableNum = selectedTable ? parseInt(selectedTable.name.replace(/\D/g, '') || selectedTable.name) : null;
+
+                    await orderService.confirmByCode(code, tableNum, restId, waiterToken);
+
+                    // Success
+                    setShowSuccessOverlay(true);
+
+                    // Clear Data & Token immediately
+                    setWaiterToken(null);
+                    setOrderData(null);
+
+                    setTimeout(() => {
+                        setShowSuccessOverlay(false);
+                        handleClearTable({ stopPropagation: () => { } });
+                        setViewMode('home');
+                    }, 3000);
+                } catch (error) {
+                    console.error("Confirm error:", error);
+                    alert("Erro ao confirmar: " + error.message);
+                }
+            }
+        } else if (selectedTable && onConfirmOrder) {
+            // ... existing logic for other flows (if any uses this locally, though create_order usage above replaces logic for this view)
+            // Actually, the original handleFinalConfirm seemed generic.
+            // But logic above handles the 'create_order' specific flow described.
+            // If viewMode is different, we fallback to props callback
+
             // 1. Commit the order immediately
             onConfirmOrder(selectedTable.id);
 
@@ -267,7 +327,7 @@ export const Sidebar = (props) => {
                 setShowSuccessOverlay(false);
                 handleClearTable({ stopPropagation: () => { } });
                 setViewMode('home');
-            }, 5000);
+            }, 10000);
         }
     };
 
@@ -283,6 +343,8 @@ export const Sidebar = (props) => {
         setPedidoCode(['', '', '', '']);
         setCodeStatus('idle');
         setIsOrderVisible(false);
+        setWaiterToken(null);
+        setOrderData(null);
 
         setViewMode('create_order');
         // Auto-focus the table input after render
@@ -999,26 +1061,23 @@ export const Sidebar = (props) => {
                             </div>
                         ) : (
                             <div className="order-details-wrapper">
-                                <h3 className="details-title">Detalhes do Pedido</h3>
+                                <h3 className="details-title">Detalhes do Pedido #{orderData?.code || '...'}</h3>
 
-                                {/* Mock Items x4 */}
-                                {[1, 2, 3, 4].map((item) => (
-                                    <div className="order-item-card" key={item}>
+                                {orderData?.items?.map((item, index) => (
+                                    <div className="order-item-card" key={item.id || index}>
                                         <div className="item-header">
                                             <div className="item-name-group">
-                                                <span className="item-name">1x Nome do Prato</span>
-                                                <div className="copy-id-badge" style={{ cursor: 'pointer' }}>
-                                                    Copiar ID do Produto
-                                                </div>
+                                                <span className="item-name">{item.quantity}x {item.menuItem.name}</span>
                                             </div>
-                                            <span className="item-price">R$ 34,00</span>
+                                            <span className="item-price">R$ {Number(item.menuItem.price || 0).toFixed(2)}</span>
                                         </div>
 
                                         <div className="item-footer">
-                                            <div className="item-addons" style={{ fontSize: 16 }}>
-                                                • Adicional   • Adicional
-                                            </div>
-                                            <span className="extra-price">+ R$ 15,00 em Adicionais</span>
+                                            {item.notes && (
+                                                <div className="item-addons" style={{ fontSize: 16 }}>
+                                                    • {item.notes}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -1031,7 +1090,7 @@ export const Sidebar = (props) => {
                         {isOrderVisible && (
                             <div className="footer-total-row">
                                 <span className="total-label">Total do Pedido</span>
-                                <span className="total-amount">R$ 123.00</span>
+                                <span className="total-amount">R$ {Number(orderData?.total || 0).toFixed(2)}</span>
                             </div>
                         )}
 

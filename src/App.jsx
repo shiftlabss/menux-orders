@@ -69,8 +69,22 @@ function App() {
 
   // Poll every 5 seconds to keep status updated
   useEffect(() => {
-    const interval = setInterval(fetchTables, 5000);
-    return () => clearInterval(interval);
+    let timeoutId;
+
+    const poll = async () => {
+      try {
+        await fetchTables();
+      } catch (error) {
+        console.error("Polling error:", error);
+      } finally {
+        timeoutId = setTimeout(poll, 30000);
+      }
+    };
+
+    // Start polling after 30 seconds (initial fetch handles immediate load)
+    timeoutId = setTimeout(poll, 30000);
+
+    return () => clearTimeout(timeoutId);
   }, [fetchTables]);
 
   const handleOrderConfirmed = (tableId) => {
