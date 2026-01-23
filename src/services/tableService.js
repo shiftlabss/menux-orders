@@ -42,7 +42,6 @@ export const tableService = {
         }
 
         return api.post('/tables/transfer', data);
-        // return orders.filter(o => !['FINISHED', 'CANCELED'].includes(o.status));
     }
 };
 

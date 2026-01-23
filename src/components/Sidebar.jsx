@@ -456,7 +456,6 @@ export const Sidebar = (props) => {
                     setShowSuccessOverlay(true);
 
                     // Clear Data & Token immediately
-                    // Clear Data & Token immediately
                     setWaiterToken(null);
                     setWaiterInfo(null);
                     setOrderData(null);
