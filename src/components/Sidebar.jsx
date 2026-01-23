@@ -230,6 +230,29 @@ export const Sidebar = (props) => {
     // // ---- State: Order Code ----
     // const [pedidoCode, setPedidoCode] = useState(['', '', '', '']);
     // const [codeStatus, setCodeStatus] = useState('idle');
+    // Handle Code Confirm
+    // const handleCodeConfirm = async () => {
+    //     setCodeStatus('loading');
+    //     try {
+    //         const restId = localStorage.getItem('restaurantId');
+    //         const code = pedidoCode.join('');
+
+    //         const data = await orderService.getOrderByCode(code, restId, waiterToken);
+    //         setOrderData(data); // Store order data
+
+    //         setCodeStatus('success');
+    //         // Show order details *after* success state confirms
+    //         setTimeout(() => {
+    //             setIsOrderVisible(true);
+    //             // Focus Footer Button for final "Enter" confirmation
+    //             setTimeout(() => footerBtnRef.current?.focus(), 100);
+    //         }, 500);
+    //     } catch (error) {
+    //         console.error('Order Fetch error:', error);
+    //         setCodeStatus('idle');
+    //         alert('Erro ao buscar pedido: ' + error.message);
+    //     }
+    // };
 
     // ---- State: Product Launch ----
     const [productCode, setProductCode] = useState('');
@@ -427,6 +450,7 @@ export const Sidebar = (props) => {
                     const tableNum = selectedTable ? parseInt(selectedTable.name.replace(/\D/g, '') || selectedTable.name) : null;
 
                     await orderService.confirmByCode(code, tableNum, restId, waiterToken, waiterInfo);
+                    // await orderService.confirmByCode(code, tableNum, restId, waiterToken);
 
                     // Success
                     setShowSuccessOverlay(true);

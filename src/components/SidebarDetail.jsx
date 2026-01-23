@@ -409,23 +409,23 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                                     </button>
                                 </div>
                             </div>
-                            <span className="mesa-id-badge">{table.name}</span>
+                            {/* <span className="mesa-id-badge">{table.name}</span>
                             <span className="status-pill-blue">
                                 <span className="status-dot-blue"></span>
                                 Ocupada
                             </span>
                             <div className="header-time-text">
                                 • Ativa há {duration}
-                            </div>
+                            </div> */}
                         </div>
-                        <div className="header-right-group">
+                        {/* <div className="header-right-group">
                             <div className="total-label-xs">Total Parcial</div>
                             <div className="total-value-md">{total}</div>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* 4. Items List */}
-                    <div className="detail-items-section">
+                    {/* <div className="detail-items-section">
                         <h3 className="section-title-bold" style={{ marginBottom: 12 }}>Itens na Mesa</h3>
                         <div className="items-list-vertical">
                             {items.map((item, idx) => (
@@ -441,10 +441,10 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                                         R$ {item.totalValue.toFixed(2).replace('.', ',')}
                                     </div>
                                 </div>
-                            ))}
+                            ))} */}
 
-                            {/* Card 2 (Duplicate for scroll effect) */}
-                            <div className="maestro-card-pro">
+                    {/* Card 2 (Duplicate for scroll effect) */}
+                    {/* <div className="maestro-card-pro">
                                 <div className="card-warning-badge">
                                     <LightningIcon /> Prioridade Média
                                 </div>
@@ -472,7 +472,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* 3. Operational Details */}
                     <div className="detail-ops-section">
@@ -519,7 +519,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                 </div>
 
                 {/* 5. Footer */}
-                <div className="detail-footer-pro">
+                {/* <div className="detail-footer-pro">
                     <div className="footer-left-block">
                         <span className="footer-label">Total Acumulado</span>
                         <span className="footer-value">{total}</span>
@@ -543,20 +543,42 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack }) => {
                             <CircleCheckIcon /> Fechar conta
                         </button>
                     </div>
-                </div>
+                </div> */}
 
             </aside>
 
-            {
-                isAuthModalOpen && (
-                    <WaiterAuthModal
-                        isOpen={isAuthModalOpen}
-                        onClose={() => setIsAuthModalOpen(false)}
-                        onConfirm={handleAuthConfirm}
-                        title="Autorização para Excluir Item"
-                    />
-                )
-            }
+            {/* 5. Footer */}
+            <div className="detail-footer-pro">
+                <div className="footer-left-block">
+                    <span className="footer-label">Total Acumulado</span>
+                    <span className="footer-value">{total}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12 }}>
+                    {/* <button
+                        className="btn-action-footer"
+                        onClick={onGroup}
+                        title="Agrupar: Somar contas, mesas continuam existindo"
+                    >
+                        <GroupIcon /> Agrupar
+                    </button> */}
+                    <button
+                        className="btn-action-footer"
+                        onClick={onTransfer}
+                        title="Transferir: Mover conta, mesa de origem deixa de existir"
+                    >
+                        <TransferIcon /> Transferir Mesa
+                    </button>
+                    <button className="btn-close-purple">
+                        <CircleCheckIcon /> Fechar conta
+                    </button>
+
+                    <button className="btn-finish-violet">
+                        <FlagIcon /> Finalizar Mesa
+                    </button>
+                </div>
+            </div>
+
+
         </>
     );
 

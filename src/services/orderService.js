@@ -25,4 +25,16 @@ export const orderService = {
             }
         });
     }
+
+
+
+    // confirmByCode(code, tableNumber, restaurantId, waiterToken) {
+    //     return api.request(`/orders/confirm-by-code?restaurantId=${restaurantId}`, {
+    //         method: 'POST',
+    //         body: JSON.stringify({ code, tableNumber }),
+    //         headers: {
+    //             'Authorization': `Bearer ${waiterToken}`
+    //         }
+    //     });
+    // }
 };
