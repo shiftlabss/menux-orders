@@ -22,6 +22,7 @@ const LoadingSpinner = () => (
 export const Sidebar = (props) => {
     // Destructure for internal usage if needed, but `props.activeTable` is used in new code
     const { tables = [], onConfirmOrder } = props;
+    const safeTables = Array.isArray(tables) ? tables : [];
     // ---- State: Main View ----
     const [isOrderVisible, setIsOrderVisible] = useState(false); // Controls empty vs filled content
 
@@ -70,20 +71,23 @@ export const Sidebar = (props) => {
     // For 'transfer_table', we want destination (usually 'Livre' or 'Ocupada').
     // Simplified: Show all for special modes, filter for create_order.
     const availableTables = (['group_tables', 'transfer_table'].includes(viewMode))
-        ? tables.filter(t => t.id !== props.activeTable?.id) // Exclude current table
-        : tables.filter(t => t.status === 'Livre');
+        ? safeTables.filter(t => t.id !== props.activeTable?.id) // Exclude current table
+        : safeTables.filter(t => t.status === 'Livre');
 
     const filteredTables = availableTables.filter(t => {
-        const matchesName = t.name.toLowerCase().includes(tableName.toLowerCase());
+        const matchesName = (t.name || '').toLowerCase().includes((tableName || '').toLowerCase());
         const isAlreadySelected = viewMode === 'group_tables'
             ? selectedGroupTables.some(sel => sel.id === t.id)
             : false;
         return matchesName && !isAlreadySelected;
     });
 
+    const [focusedIndex, setFocusedIndex] = useState(-1);
+
     const handleTableChange = (e) => {
         setTableName(e.target.value);
         setShowDropdown(true);
+        setFocusedIndex(-1); // Reset focus when typing
     };
 
     const handleSelectTable = (table) => {
@@ -95,11 +99,13 @@ export const Sidebar = (props) => {
             setTableName('');
             // Keep focus on input for more selections
             setShowDropdown(false);
+            setFocusedIndex(-1);
         } else {
             // Single-select logic
             setSelectedTable(table);
             setTableName('');
             setShowDropdown(false);
+            setFocusedIndex(-1);
             // Focus next step (ID Garçom) - wait for render
             setTimeout(() => idRefs.current[0]?.focus(), 100);
         }
@@ -114,104 +120,122 @@ export const Sidebar = (props) => {
         }
     };
 
-    // ---- State: Auth (ID & Password) ----
+    // ---- State: Authentication ----
     const [idGarcom, setIdGarcom] = useState(['', '', '', '']);
     const [senha, setSenha] = useState(['', '', '', '']);
-    const [authStatus, setAuthStatus] = useState('idle'); // idle, loading, success
+    const [authStatus, setAuthStatus] = useState('idle'); // idle | loading | success | error
 
+    // Refs for Auto-focus
     const idRefs = useRef([]);
     const senhaRefs = useRef([]);
-
-    // Generic Pin Handler
-    const handlePinChange = (index, value, setter, currentValues, refs) => {
-        if (value.length > 1) return; // Single char only
-
-        const newValues = [...currentValues];
-        newValues[index] = value;
-        setter(newValues);
-
-        // Auto-focus next input if value entered
-        if (value && index < 3) {
-            refs.current[index + 1].focus();
-        }
-    };
-
-    // Handle Auth Confirm
-    const handleAuthConfirm = () => {
-        setAuthStatus('loading');
-
-        // Mock API call
-        setTimeout(() => {
-            setAuthStatus('success');
-            // Auto focus code input after success
-            setTimeout(() => codeRefs.current[0]?.focus(), 100);
-        }, 1500);
-    };
-
-    // ---- State: Order Code ----
-    const [pedidoCode, setPedidoCode] = useState(['', '', '', '']);
-    const [codeStatus, setCodeStatus] = useState('idle'); // idle, loading, success
     const codeRefs = useRef([]);
     const footerBtnRef = useRef(null);
 
-    // Handle Code Confirm
-    const handleCodeConfirm = () => {
-        setCodeStatus('loading');
-
-        setTimeout(() => {
-            setCodeStatus('success');
-            // Show order details *after* success state confirms
-            setTimeout(() => {
-                setIsOrderVisible(true);
-                // Focus Footer Button for final "Enter" confirmation
-                setTimeout(() => footerBtnRef.current?.focus(), 100);
-            }, 500);
-        }, 1500);
-    };
+    // ---- State: Order Code ----
+    const [pedidoCode, setPedidoCode] = useState(['', '', '', '']);
+    const [codeStatus, setCodeStatus] = useState('idle');
 
     // ---- State: Product Launch ----
     const [productCode, setProductCode] = useState('');
     const [productQty, setProductQty] = useState('1');
-    const [productStatus, setProductStatus] = useState('idle'); // idle, loading, success
+    const [productStatus, setProductStatus] = useState('idle');
+
+    const handlePinChange = (index, value, setter, currentValues, refs) => {
+        if (!/^\d*$/.test(value)) return;
+        const newValues = [...currentValues];
+        newValues[index] = value;
+        setter(newValues);
+
+        // Auto-advance
+        if (value && index < 3) {
+            refs.current[index + 1]?.focus();
+        }
+    };
+
+    const handleAuthConfirm = () => {
+        setAuthStatus('loading');
+        // Mock API call
+        setTimeout(() => {
+            setAuthStatus('success');
+            // Auto-focus next step (Order Code or Product Code depending on mode)
+            setTimeout(() => {
+                codeRefs.current[0]?.focus();
+            }, 100);
+        }, 1000);
+    };
+
+    const handleCodeConfirm = () => {
+        setCodeStatus('loading');
+        setTimeout(() => {
+            setCodeStatus('success');
+            setIsOrderVisible(true);
+            setTimeout(() => {
+                footerBtnRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }, 800);
+    };
 
     const handleProductConfirm = () => {
         setProductStatus('loading');
         setTimeout(() => {
             setProductStatus('success');
-            // Trigger final success sequence
-            setTimeout(() => {
-                handleFinalProductConfirm();
-            }, 500);
-        }, 1500);
-    };
-
-    const handleFinalProductConfirm = () => {
-        if (selectedTable) {
+            // Show success overlay
             setShowSuccessOverlay(true);
-            setTimeout(() => {
-                setShowSuccessOverlay(false);
-                handleClearTable({ stopPropagation: () => { } });
-                setViewMode('home');
-            }, 3000);
-        }
-    };
 
-    // --- Enter Key Handlers ---
+            // Allow launching multiple products? 
+            // For now, let's reset to allow another add or finish.
+            setTimeout(() => {
+                setProductStatus('idle');
+                setShowSuccessOverlay(false);
+                setProductCode('');
+                setProductQty('1');
+                codeRefs.current[0]?.focus();
+            }, 2000); // Quick turnaround for multiple generic products
+        }, 800);
+    };
 
     const handleMesaKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            // First try finding by ID explicitly (e.g. user typed "5" -> matches ID 5)
-            const matchById = availableTables.find(t => t.id.toString() === tableName.trim());
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setShowDropdown(true); // Ensure dropdown is open
+            setFocusedIndex(prev => (prev < filteredTables.length - 1 ? prev + 1 : prev));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setFocusedIndex(prev => (prev > 0 ? prev - 1 : -1));
+        } else if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent accidental form submission if any
 
-            // Then try exact name match
-            const exactNameMatch = filteredTables.find(t => t.name.toLowerCase() === tableName.toLowerCase());
+            // 1. If an item is focused via Arrow keys, select it
+            if (focusedIndex >= 0 && filteredTables[focusedIndex]) {
+                handleSelectTable(filteredTables[focusedIndex]);
+                return;
+            }
 
+            // 2. Try exact number match from input (handle "2" vs "Mesa 2")
+            // We strip non-digits to compare raw numbers if possible, 
+            // or match the exact user input against table.number specifically.
+            const rawInput = tableName.trim();
+            const matchByNumber = availableTables.find(t =>
+                t.number?.toString() === rawInput ||
+                t.name?.toLowerCase() === rawInput.toLowerCase() ||
+                t.name?.toLowerCase() === `mesa ${rawInput}`.toLowerCase()
+            );
+
+            if (matchByNumber) {
+                handleSelectTable(matchByNumber);
+                return;
+            }
+
+            // 3. Fallback: If there's exactly one filtered result, select it
+            if (filteredTables.length === 1) {
+                handleSelectTable(filteredTables[0]);
+                return;
+            }
+
+            // 4. Try legacy ID match (rarely used if user types UUID)
+            const matchById = availableTables.find(t => t.id?.toString() === rawInput);
             if (matchById) {
                 handleSelectTable(matchById);
-            } else if (exactNameMatch) {
-                handleSelectTable(exactNameMatch);
-            } else if (filteredTables.length === 1) {
-                handleSelectTable(filteredTables[0]);
             }
         }
     };
@@ -529,10 +553,10 @@ export const Sidebar = (props) => {
                             {showDropdown && !selectedTable && tableName && (
                                 <div className="mesa-dropdown-list">
                                     {filteredTables.length > 0 ? (
-                                        filteredTables.map(table => (
+                                        filteredTables.map((table, index) => (
                                             <div
                                                 key={table.id}
-                                                className="mesa-dropdown-item"
+                                                className={`mesa-dropdown-item ${index === focusedIndex ? 'focused' : ''}`}
                                                 onMouseDown={() => handleSelectTable(table)}
                                             >
                                                 {table.name}
@@ -617,9 +641,9 @@ export const Sidebar = (props) => {
                                 </div>
                             </div>
 
-                            <div className="input-group" style={{ width: 80 }}>
+                            <div className="input-group" style={{ width: 100, flexShrink: 0 }}>
                                 <label className="input-label" style={{ opacity: isProductStepEnabled ? 1 : 0.5 }}>Qtd.</label>
-                                <div className="mesa-input-wrapper" style={{ opacity: isProductStepEnabled ? 1 : 0.5, backgroundColor: isProductStepEnabled ? 'var(--bg-surface)' : 'var(--bg-input-disabled)' }}>
+                                <div className="mesa-input-wrapper" style={{ opacity: isProductStepEnabled ? 1 : 0.5, backgroundColor: isProductStepEnabled ? 'var(--bg-surface)' : 'var(--bg-input-disabled)', maxWidth: 100 }}>
                                     <input
                                         type="number"
                                         className="mesa-input"
@@ -627,7 +651,8 @@ export const Sidebar = (props) => {
                                         onChange={(e) => setProductQty(e.target.value)}
                                         disabled={!isProductStepEnabled}
                                         onKeyDown={handleProductKeyDown}
-                                        style={{ textAlign: 'center' }}
+                                        style={{ textAlign: 'center', width: '100%' }}
+                                        min="1"
                                     />
                                 </div>
                             </div>
@@ -700,8 +725,8 @@ export const Sidebar = (props) => {
                             {showDropdown && tableName && (
                                 <div className="mesa-dropdown-list">
                                     {filteredTables.length > 0 ? (
-                                        filteredTables.map(table => (
-                                            <div key={table.id} className="mesa-dropdown-item" onMouseDown={() => handleSelectTable(table)}>{table.name}</div>
+                                        filteredTables.map((table, index) => (
+                                            <div key={table.id} className={`mesa-dropdown-item ${index === focusedIndex ? 'focused' : ''}`} onMouseDown={() => handleSelectTable(table)}>{table.name}</div>
                                         ))
                                     ) : (
                                         <div className="mesa-dropdown-item" style={{ cursor: 'default', color: 'var(--text-muted)' }}>Nenhuma mesa encontrada</div>
@@ -792,8 +817,8 @@ export const Sidebar = (props) => {
                             {showDropdown && !selectedTable && tableName && (
                                 <div className="mesa-dropdown-list">
                                     {filteredTables.length > 0 ? (
-                                        filteredTables.map(table => (
-                                            <div key={table.id} className="mesa-dropdown-item" onMouseDown={() => handleSelectTable(table)}>{table.name}</div>
+                                        filteredTables.map((table, index) => (
+                                            <div key={table.id} className={`mesa-dropdown-item ${index === focusedIndex ? 'focused' : ''}`} onMouseDown={() => handleSelectTable(table)}>{table.name}</div>
                                         ))
                                     ) : (
                                         <div className="mesa-dropdown-item" style={{ cursor: 'default', color: 'var(--text-muted)' }}>Nenhuma mesa encontrada</div>
@@ -883,10 +908,10 @@ export const Sidebar = (props) => {
                             {showDropdown && !selectedTable && tableName && (
                                 <div className="mesa-dropdown-list">
                                     {filteredTables.length > 0 ? (
-                                        filteredTables.map(table => (
+                                        filteredTables.map((table, index) => (
                                             <div
                                                 key={table.id}
-                                                className="mesa-dropdown-item"
+                                                className={`mesa-dropdown-item ${index === focusedIndex ? 'focused' : ''}`}
                                                 onMouseDown={() => handleSelectTable(table)} // onMouseDown fires before Blur
                                             >
                                                 {table.name}

@@ -103,6 +103,14 @@
     background-color: var(--bg-surface-subtle);
 }
 
+.mesa-dropdown-item.focused {
+    background-color: #eeeeee;
+    color: black;
+    font-weight: 600;
+    border-left: 4px solid #eeeeee;
+    padding-left: 8px;
+}
+
 /* Active Mesa Tag */
 .mesa-tag {
     display: inline-flex;

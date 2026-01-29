@@ -10,7 +10,7 @@ function App() {
     if (saved) return JSON.parse(saved);
     return Array.from({ length: 40 }, (_, index) => {
       const id = index + 1;
-      return { id, status: 'Livre', amount: '0,00', name: `Mesa ${id}` };
+      return { id, number: id, status: 'Livre', amount: '0,00', name: `Mesa ${id}` };
     });
   });
 
