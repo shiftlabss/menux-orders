@@ -1,0 +1,136 @@
+.waiter-auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1200;
+    backdrop-filter: blur(2px);
+}
+
+.waiter-auth-modal {
+    background: transparent;
+    padding: 20px;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.waiter-auth-content {
+    background: white;
+    padding: 24px 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+}
+
+.auth-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-field-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+    margin-left: 2px;
+}
+
+.pin-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.pin-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    background: #f9f9f9;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: #111;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.pin-box:focus {
+    background: white;
+    border-color: #000;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-auth-submit {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #000;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.btn-auth-submit:active {
+    transform: scale(0.95);
+}
+
+.btn-auth-submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.auth-error-inline {
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: -8px;
+}
+
+.loader-dot {
+    width: 20px;
+    height: 20px;
+    border: 2px solid white;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -8,8 +8,17 @@ import './App.css';
 
 function App() {
   // State for Tables
-  const [tables, setTables] = useState([]);
+  // const [tables, setTables] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  // Initial Dummy Data
+  const [tables, setTables] = useState(() => {
+    const saved = localStorage.getItem('menuxTables');
+    if (saved) return JSON.parse(saved);
+    return Array.from({ length: 40 }, (_, index) => {
+      const id = index + 1;
+      return { id, number: id, status: 'Livre', amount: '0,00', name: `Mesa ${id}` };
+    });
+  });
 
   // Fetch Tables
   const fetchTables = useCallback(async () => {
