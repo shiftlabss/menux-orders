@@ -737,7 +737,7 @@ export const Sidebar = (props) => {
                     </div>
 
                     {/* Middle Section: Launch Product */}
-                    <div className="home-section middle">
+                    {/* <div className="home-section middle">
                         <div className="home-content-centered">
                             <h3 className="home-title">Adicionar produto<br />à uma mesa?</h3>
                             <p className="home-subtitle">Lance novos itens rapidamente<br />em uma mesa já aberta.</p>
@@ -749,7 +749,7 @@ export const Sidebar = (props) => {
                         <div className="home-shortcut-hint">
                             Atalho rápido: <kbd className="shortcut-key">/</kbd>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Bottom Section: Table Select */}
                     <div className="home-section bottom">
