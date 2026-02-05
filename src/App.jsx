@@ -23,6 +23,9 @@ function App() {
   // State for Tables
   // const [tables, setTables] = useState([]);
   // const [isLoading, setIsLoading] = useState(true);
+  // State for Tables
+  // const [tables, setTables] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
 
   // Fetch Tables
   const fetchTables = useCallback(async () => {

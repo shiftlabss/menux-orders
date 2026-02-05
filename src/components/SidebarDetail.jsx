@@ -1,11 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { tableService } from '../services/tableService';
 import './SidebarDetail.css';
 import { WaiterAuthModal } from './WaiterAuthModal';
+import { tableService } from '../services/tableService';
+
 
 
 // Icons
 
+const TrashIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 6h18" />
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+);
 
 const ClockIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -87,12 +95,13 @@ const FlagIcon = () => (
         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
     </svg>
 );
-const TrashIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="3 6 5 6 21 6"></polyline>
-        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    </svg>
-);
+
+// const TrashIcon = () => (
+//     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//         <polyline points="3 6 5 6 21 6"></polyline>
+//         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+//     </svg>
+// );
 
 // (Removed unused Icon components if any, keeping used ones)
 
@@ -109,6 +118,8 @@ const LogOutIcon = () => (
 export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     useEffect(() => {
         if (table?.id) {
@@ -172,30 +183,30 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
     //     { id: 9, name: 'Moscow Mule', qty: 2 },
     // ]);
 
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState(null);
+    // const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    // const [itemToDelete, setItemToDelete] = useState(null);
 
     const handleDeleteClick = (item) => {
         setItemToDelete(item);
         setIsAuthModalOpen(true);
     };
 
-    const handleAuthConfirm = async (code, password) => {
-        try {
-            // Call service
-            await tableService.removeItem(table.id, itemToDelete.id, code, password);
+    // const handleAuthConfirm = async (code, password) => {
+    //     try {
+    //         // Call service
+    //         await tableService.removeItem(table.id, itemToDelete.id, code, password);
 
-            // UI Update ( Optimistic or after success)
-            setItems(prev => prev.filter(i => i !== itemToDelete));
+    //         // UI Update ( Optimistic or after success)
+    //         setItems(prev => prev.filter(i => i !== itemToDelete));
 
-            // Close modal
-            setIsAuthModalOpen(false);
-            setItemToDelete(null);
-        } catch (error) {
-            console.error("Failed to delete item", error);
-            throw error; // Re-throw so modal handles error display
-        }
-    }
+    //         // Close modal
+    //         setIsAuthModalOpen(false);
+    //         setItemToDelete(null);
+    //     } catch (error) {
+    //         console.error("Failed to delete item", error);
+    //         throw error; // Re-throw so modal handles error display
+    //     }
+    // }
     // }, [table?.id]);
 
     // // Data Processing
@@ -239,6 +250,8 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
 
     const scrollRef = useRef(null);
 
+
+
     const handleFinalize = async () => {
         if (!table?.id) return;
 
@@ -253,6 +266,23 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
         } catch (error) {
             console.error("Release Table error:", error);
             alert("Erro ao finalizar mesa: " + error.message);
+        }
+    };
+
+    const handleAuthConfirm = async (code, password) => {
+        try {
+            // Call service
+            await tableService.removeItem(table.id, itemToDelete.id, code, password);
+
+            // UI Update ( Optimistic or after success)
+            setItems(prev => prev.filter(i => i !== itemToDelete));
+
+            // Close modal
+            setIsAuthModalOpen(false);
+            setItemToDelete(null);
+        } catch (error) {
+            console.error("Failed to delete item", error);
+            throw error; // Re-throw so modal handles error display
         }
     };
 
@@ -284,21 +314,19 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                     </div>
                 </div>
 
+
+
+
                 {/* Scrollable Content */}
-                {/* <div style={{ flex: 1, overflowY: 'auto' }}> */}
+                <div style={{ flex: 1, overflowY: 'auto' }}>
 
-                {/* 2. Maestro Section */}
-                {/* <div className="detail-maestro-section"> */}
-                {/* <div className="maestro-title-row">
-                        <MaestroIcon /> Sugestão do Maestro
-                    </div>
+                    {/* 2. Maestro Section */}
+                    <div className="detail-maestro-section">
+                        <div className="maestro-title-row">
+                            <MaestroIcon /> Sugestão do Maestro
+                        </div>
 
-                    <div className="maestro-cards-scroll" ref={scrollRef}> */}
-                {/* Card 1 */}
-                {/* <div className="maestro-card-pro">
-                            <div className="card-warning-badge">
-                                <LightningIcon /> Prioridade Média
-                            </div>
+                        <div className='maestro-card-pro'>
 
                             <div className="card-content-block">
                                 <span className="card-icon-circle"><DrinkIcon /></span>
@@ -322,34 +350,30 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                                 <button className="btn-ignore-grey">
                                     <XIcon /> Ignorar
                                 </button>
-                            </div> */}
+                            </div>
+                        </div>
+                    </div >
 
-                {/* 1. Header Pro */}
-                {/* <div className="detail-header-pro">
-                    <div className="header-left-group">
-                        <div style={{ cursor: 'pointer', display: 'flex', color: 'var(--text-primary)', marginRight: 8 }} onClick={onBack}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M19 12H5" />
-                                <path d="M12 19L5 12L12 5" />
-                            </svg>
-                        </div>
-                        <span className="mesa-id-badge">{table.name}</span>
-                        <span className="status-pill-blue">
-                            <span className="status-dot-blue"></span>
-                            Ocupada
-                        </span>
-                        <div className="header-time-text">
-                            • Ativa há {duration}
-                        </div>
+                </div >
+
+
+
+                {/* 3. Operational Details */}
+                <div className="detail-ops-section">
+                    <h3 className="section-title-bold">Detalhes Operacionais</h3>
+                    <div className="ops-meta-row">
+                        <ClockIcon /> Ativa há {duration}
+                        <span>•</span>
+                        <span>1 Pedido</span>
+                        <span>•</span>
+                        <span>0 itens consumidos</span>
+                        <span>•</span>
+                        <span className="waiter-pill">{waiterName}</span>
                     </div>
-                    <div className="header-right-group">
-                        <div className="total-label-xs">Total Parcial</div>
-                        <div className="total-value-md">{total}</div>
-                    </div>
-                </div> */}
+                </div>
 
                 {/* 4. Items List */}
-                {/* <div className="detail-items-section">
+                <div className="detail-items-section">
                     <h3 className="section-title-bold" style={{ marginBottom: 12 }}>Itens na Mesa</h3>
                     <div className="items-list-vertical">
                         {items.map((item, idx) => (
@@ -358,223 +382,83 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                                     <div className="item-qty-badge-op">{item.qty}</div>
                                     <div className="item-meta-block">
                                         <span className="item-name-op">{item.name}</span>
-                                        <span className="item-time-op">{waiterName}</span>
+                                        <span className="item-time-op">Pedido às 20:30 • {waiterName}</span>
                                     </div>
                                 </div>
                                 <div className="item-price-op">
-                                    R$ {item.totalValue.toFixed(2).replace('.', ',')} */}
-
-
-                {/* Scrollable Content */}
-                <div style={{ flex: 1, overflowY: 'auto' }}>
-
-                    {/* 2. Maestro Section */}
-                    <div className="detail-maestro-section">
-                        <div className="maestro-title-row">
-                            <MaestroIcon /> Sugestão do Maestro
-                        </div>
-
-                        <div className="maestro-cards-scroll" ref={scrollRef}>
-                            {/* Card 1 */}
-                            <div className="maestro-card-pro">
-                                <div className="card-warning-badge">
-                                    <LightningIcon /> Prioridade Média
-                                </div>
-
-                                <div className="card-content-block">
-                                    <span className="card-icon-circle"><DrinkIcon /></span>
-                                    <div className="card-text-group">
-                                        <h3>Oferecer Bebida</h3>
-                                        <p>Mesa sem pedido de bebida há 5min</p>
-                                    </div>
-                                </div>
-
-                                <div className="card-suggestions-box">
-                                    <span className="suggestion-pill">Coca-Cola</span>
-                                    <span className="suggestion-pill">Suco de Laranja</span>
-                                    <span className="suggestion-pill">Água com Gás</span>
-                                    <span className="suggestion-pill">Moscow Mule</span>
-                                </div>
-
-                                <div className="card-actions-row">
-                                    <button className="btn-seen-black">
-                                        <CheckIcon /> Marcar como visto
-                                    </button>
-                                    <button className="btn-ignore-grey">
-                                        <XIcon /> Ignorar
+                                    R$ {(12 * item.qty).toFixed(2).replace('.', ',')}
+                                    <button
+                                        onClick={() => handleDeleteClick(item)}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', marginLeft: '12px', padding: '4px' }}
+                                        title="Excluir item"
+                                    >
+                                        <TrashIcon />
                                     </button>
                                 </div>
                             </div>
-                            {/* <span className="mesa-id-badge">{table.name}</span>
-                            <span className="status-pill-blue">
-                                <span className="status-dot-blue"></span>
-                                Ocupada
-                            </span>
-                            <div className="header-time-text">
-                                • Ativa há {duration}
-                            </div> */}
-                        </div>
-                        {/* <div className="header-right-group">
-                            <div className="total-label-xs">Total Parcial</div>
-                            <div className="total-value-md">{total}</div>
-                        </div> */}
+                        ))}
                     </div>
-
-                    {/* 4. Items List */}
-                    {/* <div className="detail-items-section">
-                        <h3 className="section-title-bold" style={{ marginBottom: 12 }}>Itens na Mesa</h3>
-                        <div className="items-list-vertical">
-                            {items.map((item, idx) => (
-                                <div className="item-row-operational" key={idx}>
-                                    <div className="item-left-block">
-                                        <div className="item-qty-badge-op">{item.qty}</div>
-                                        <div className="item-meta-block">
-                                            <span className="item-name-op">{item.name}</span>
-                                            <span className="item-time-op">{waiterName}</span>
-                                        </div>
-                                    </div>
-                                    <div className="item-price-op">
-                                        R$ {item.totalValue.toFixed(2).replace('.', ',')}
-                                    </div>
-                                </div>
-                            ))} */}
-
-                    {/* Card 2 (Duplicate for scroll effect) */}
-                    {/* <div className="maestro-card-pro">
-                                <div className="card-warning-badge">
-                                    <LightningIcon /> Prioridade Média
-                                </div>
-
-                                <div className="card-content-block">
-                                    <span className="card-icon-circle"><DrinkIcon /></span>
-                                    <div className="card-text-group">
-                                        <h3>Oferecer Bebida</h3>
-                                        <p>Mesa sem pedido de bebida há 5min</p>
-                                    </div>
-                                </div>
-
-                                <div className="card-suggestions-box">
-                                    <span className="suggestion-pill">Coca-Cola</span>
-                                    <span className="suggestion-pill">Suco de Laranja</span>
-                                </div>
-
-                                <div className="card-actions-row">
-                                    <button className="btn-seen-black">
-                                        <CheckIcon /> Marcar como visto
-                                    </button>
-                                    <button className="btn-ignore-grey">
-                                        <XIcon /> Ignorar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
-
-                    {/* 3. Operational Details */}
-                    <div className="detail-ops-section">
-                        <h3 className="section-title-bold">Detalhes Operacionais</h3>
-                        <div className="ops-meta-row">
-                            <ClockIcon /> Ativa há {duration}
-                            <span>•</span>
-                            <span>1 Pedido</span>
-                            <span>•</span>
-                            <span>0 itens consumidos</span>
-                            <span>•</span>
-                            <span className="waiter-pill">{waiterName}</span>
-                        </div>
-                    </div>
-
-                    {/* 4. Items List */}
-                    <div className="detail-items-section">
-                        <h3 className="section-title-bold" style={{ marginBottom: 12 }}>Itens na Mesa</h3>
-                        <div className="items-list-vertical">
-                            {items.map((item, idx) => (
-                                <div className="item-row-operational" key={idx}>
-                                    <div className="item-left-block">
-                                        <div className="item-qty-badge-op">{item.qty}</div>
-                                        <div className="item-meta-block">
-                                            <span className="item-name-op">{item.name}</span>
-                                            <span className="item-time-op">Pedido às 20:30 • {waiterName}</span>
-                                        </div>
-                                    </div>
-                                    <div className="item-price-op">
-                                        R$ {(12 * item.qty).toFixed(2).replace('.', ',')}
-                                        <button
-                                            onClick={() => handleDeleteClick(item)}
-                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', marginLeft: '12px', padding: '4px' }}
-                                            title="Excluir item"
-                                        >
-                                            <TrashIcon />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                 </div>
 
-                {/* 5. Footer */}
-                {/* <div className="detail-footer-pro">
-                    <div className="footer-left-block">
-                        <span className="footer-label">Total Acumulado</span>
-                        <span className="footer-value">{total}</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                        <button
-                            className="btn-action-footer"
-                            onClick={onGroup}
-                            title="Agrupar: Somar contas, mesas continuam existindo"
-                        >
-                            <GroupIcon /> Agrupar
-                        </button>
-                        <button
-                            className="btn-action-footer"
-                            onClick={onTransfer}
-                            title="Transferir: Mover conta, mesa de origem deixa de existir"
-                        >
-                            <TransferIcon /> Transferir
-                        </button>
-                        <button className="btn-close-purple">
-                            <CircleCheckIcon /> Fechar conta
-                        </button>
-                    </div>
-                </div> */}
 
-            </aside>
+
+
+
+            </aside >
 
             {/* 5. Footer */}
-            <div className="detail-footer-pro">
+            < div className="detail-footer-pro" >
                 <div className="footer-left-block">
                     <span className="footer-label">Total Acumulado</span>
                     <span className="footer-value">{total}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
                     {/* <button
+                {/* 5. Footer */}
+                    <div className="detail-footer-pro">
+                        <div className="footer-left-block">
+                            <span className="footer-label">Total Acumulado</span>
+                            <span className="footer-value">{total}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 12 }}>
+                            {/* <button
                         className="btn-action-footer"
                         onClick={onGroup}
                         title="Agrupar: Somar contas, mesas continuam existindo"
                     >
                         <GroupIcon /> Agrupar
                     </button> */}
-                    <button
-                        className="btn-action-footer"
-                        onClick={onTransfer}
-                        title="Transferir: Mover conta, mesa de origem deixa de existir"
-                    >
-                        <TransferIcon /> Transferir Mesa
-                    </button>
+                            <button
+                                className="btn-action-footer"
+                                onClick={onTransfer}
+                                title="Transferir: Mover conta, mesa de origem deixa de existir"
+                            >
+                                <TransferIcon /> Transferir Mesa
+                            </button>
 
-                    <button className="btn-finish-red" onClick={handleFinalize}>
-                        <LogOutIcon /> Finalizar Mesa
-                    </button>
-                    <button className="btn-close-purple">
-                        <CircleCheckIcon /> Fechar conta
-                    </button>
+                            <button className="btn-finish-red" onClick={handleFinalize}>
+                                <LogOutIcon /> Finalizar Mesa
+                            </button>
+                            <button className="btn-close-purple">
+                                <CircleCheckIcon /> Fechar conta
+                            </button>
+                        </div>
+                    </div>
+
+
+
+                    {
+                        isAuthModalOpen && (
+                            <WaiterAuthModal
+                                isOpen={isAuthModalOpen}
+                                onClose={() => setIsAuthModalOpen(false)}
+                                onConfirm={handleAuthConfirm}
+                                title="Autorização para Excluir Item"
+                            />
+                        )
+                    }
                 </div>
             </div>
-
-
         </>
     );
 
