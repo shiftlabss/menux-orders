@@ -318,7 +318,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
 
 
                 {/* Scrollable Content */}
-                <div style={{ flex: 1, overflowY: 'auto' }}>
+                <div style={{ flex: 1, height: 'fit-content' }}>
 
                     {/* 2. Maestro Section */}
                     <div className="detail-maestro-section">
@@ -406,59 +406,50 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
 
             </aside >
 
-            {/* 5. Footer */}
-            < div className="detail-footer-pro" >
+            <div className="detail-footer-pro">
                 <div className="footer-left-block">
                     <span className="footer-label">Total Acumulado</span>
                     <span className="footer-value">{total}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
                     {/* <button
-                {/* 5. Footer */}
-                    <div className="detail-footer-pro">
-                        <div className="footer-left-block">
-                            <span className="footer-label">Total Acumulado</span>
-                            <span className="footer-value">{total}</span>
-                        </div>
-                        <div style={{ display: 'flex', gap: 12 }}>
-                            {/* <button
                         className="btn-action-footer"
                         onClick={onGroup}
                         title="Agrupar: Somar contas, mesas continuam existindo"
                     >
                         <GroupIcon /> Agrupar
                     </button> */}
-                            <button
-                                className="btn-action-footer"
-                                onClick={onTransfer}
-                                title="Transferir: Mover conta, mesa de origem deixa de existir"
-                            >
-                                <TransferIcon /> Transferir Mesa
-                            </button>
+                    <button
+                        className="btn-action-footer"
+                        onClick={onTransfer}
+                        title="Transferir: Mover conta, mesa de origem deixa de existir"
+                    >
+                        <TransferIcon /> Transferir Mesa
+                    </button>
 
-                            <button className="btn-finish-red" onClick={handleFinalize}>
-                                <LogOutIcon /> Finalizar Mesa
-                            </button>
-                            <button className="btn-close-purple">
-                                <CircleCheckIcon /> Fechar conta
-                            </button>
-                        </div>
-                    </div>
-
-
-
-                    {
-                        isAuthModalOpen && (
-                            <WaiterAuthModal
-                                isOpen={isAuthModalOpen}
-                                onClose={() => setIsAuthModalOpen(false)}
-                                onConfirm={handleAuthConfirm}
-                                title="Autorização para Excluir Item"
-                            />
-                        )
-                    }
+                    <button className="btn-finish-red" onClick={handleFinalize}>
+                        <LogOutIcon /> Finalizar Mesa
+                    </button>
+                    <button className="btn-close-purple">
+                        <CircleCheckIcon /> Fechar conta
+                    </button>
                 </div>
             </div>
+
+
+
+            {
+                isAuthModalOpen && (
+                    <WaiterAuthModal
+                        isOpen={isAuthModalOpen}
+                        onClose={() => setIsAuthModalOpen(false)}
+                        onConfirm={handleAuthConfirm}
+                        title="Autorização para Excluir Item"
+                    />
+                )
+            }
+
+
         </>
     );
 
