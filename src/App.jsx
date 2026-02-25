@@ -4,9 +4,11 @@ import { Sidebar } from './components/Sidebar';
 import { tableService } from './services/tableService';
 import { authService } from './services/authService';
 import { restaurantService } from './services/restaurantService';
+import { LoginModal } from './components/LoginModal';
 import './App.css';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
   // State for Tables
   // const [tables, setTables] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,17 +64,14 @@ function App() {
           console.log(`Restaurant Context Loaded: ${restaurant.name} (${restaurant.id})`);
         }
 
-        // 3. Auto-login (Dev/Admin)
-        if (!authService.isAuthenticated()) {
-          try {
-            await authService.login('admin@admin.com', 'admin');
-          } catch (e) {
-            console.error("Auto-login failed", e);
-          }
+        // 3. Authentication Check
+        if (authService.isAuthenticated()) {
+          setIsAuthenticated(true);
+          fetchTables();
+        } else {
+          setIsAuthenticated(false);
+          setIsLoading(false);
         }
-
-        // 4. Fetch Tables
-        fetchTables();
 
       } catch (error) {
         console.error("Initialization Failed:", error);
@@ -83,8 +82,10 @@ function App() {
     init();
   }, [fetchTables]);
 
-  // Poll every 5 seconds to keep status updated
+  // Poll every 30 seconds to keep status updated
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     let timeoutId;
 
     const poll = async () => {
@@ -186,6 +187,15 @@ function App() {
 
   return (
     <div className="app-container">
+      {!isAuthenticated && (
+        <LoginModal
+          onLoginSuccess={() => {
+            setIsAuthenticated(true);
+            fetchTables();
+          }}
+        />
+      )}
+
       <header className="app-header">
         <div className="header-logo">
           <img src="/logo-menux.svg" alt="menux" style={{ height: '24px' }} />
