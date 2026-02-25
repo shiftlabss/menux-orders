@@ -44,18 +44,18 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        // 1. Identify Slug
-        let slug = 'menux-default'; // Default for localhost/dev
-        const hostname = window.location.hostname;
+        // 1. Identify Restaurant ID from URL
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const restaurantIdParam = pathParts.length > 0 ? pathParts[pathParts.length - 1] : null;
 
-        // If subdomain exists (e.g. tenant.domain.com)
-        const parts = hostname.split('.');
-        if (parts.length > 2 && parts[0] !== 'www') {
-          slug = parts[0];
+        if (!restaurantIdParam) {
+          console.error("No restaurant ID provided in the URL.");
+          setIsLoading(false);
+          return;
         }
 
         // 2. Fetch Restaurant Details
-        const restaurant = await restaurantService.getBySlug(slug);
+        const restaurant = await restaurantService.getById(restaurantIdParam);
 
         if (restaurant && restaurant.id) {
           localStorage.setItem('restaurantId', restaurant.id);
