@@ -613,6 +613,9 @@ export const Sidebar = (props) => {
     const isCodeStepEnabled = authStatus === 'success';
     const isCodeFilled = pedidoCode.every(d => d !== '');
 
+    // Order can only be confirmed if visible and status is PENDING
+    const isOrderConfirmable = isOrderVisible && orderData?.status === 'PENDING';
+
     // Product Step Enabled: Only if Auth is successful
     const isProductStepEnabled = authStatus === 'success';
     const isProductFilled = productCode.length > 0 && productQty > 0;
@@ -1358,10 +1361,17 @@ export const Sidebar = (props) => {
                             </div>
                         )}
 
+                        {isOrderVisible && orderData?.status !== 'PENDING' && (
+                            <div className="order-status-warning">
+                                Pedido já "CONFIRMADO".
+                            </div>
+                        )}
+
                         <button
                             ref={footerBtnRef}
-                            className={`footer-btn ${isOrderVisible ? 'success' : 'disabled'}`}
+                            className={`footer-btn ${isOrderConfirmable ? 'success' : 'disabled'}`}
                             onClick={handleFinalConfirm}
+                            disabled={!isOrderConfirmable}
                         >
                             {isOrderVisible ? (
                                 <>

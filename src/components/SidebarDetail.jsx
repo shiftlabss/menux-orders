@@ -146,42 +146,35 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
 
     // Aggregate Items
     const itemsHelper = {};
+    let calculatedTotal = 0;
+
     orders.forEach(order => {
         if (order.items) {
             order.items.forEach(item => {
-                // Adjust property access based on actual API response
-                // Assuming: item.menuItem.name or item.name
                 const name = item.menuItem?.name || item.name || 'Item';
-                const price = Number(item.price || item.unitPrice || 0);
-                const key = item.menuItemId || name;
+                const price = Number(item.price || item.unitPrice || item.menuItem?.price || 0);
+                const key = item.menuItemId || name; // Group by menuItemId or Name
 
                 if (!itemsHelper[key]) {
                     itemsHelper[key] = {
                         name,
                         qty: 0,
                         price: price,
-                        // Keep track of total value for this item type
                         totalValue: 0
                     };
                 }
                 itemsHelper[key].qty += item.quantity;
                 itemsHelper[key].totalValue += (price * item.quantity);
+                calculatedTotal += (price * item.quantity);
             });
         }
     });
 
-    // const items = Object.values(itemsHelper);
-    // const [items, setItems] = useState([
-    //     { id: 1, name: 'Coca-Cola', qty: 1 },
-    //     { id: 2, name: 'Suco de Laranja', qty: 1 },
-    //     { id: 3, name: 'Água com Gás', qty: 1 },
-    //     { id: 4, name: 'Moscow Mule', qty: 2 },
-    //     { id: 5, name: 'Moscow Mule', qty: 2 },
-    //     { id: 6, name: 'Moscow Mule', qty: 2 },
-    //     { id: 7, name: 'Moscow Mule', qty: 2 },
-    //     { id: 8, name: 'Moscow Mule', qty: 2 },
-    //     { id: 9, name: 'Moscow Mule', qty: 2 },
-    // ]);
+    const items = Object.values(itemsHelper);
+
+    // If total from table is not accurate or missing, we use calculatedTotal
+    const formattedCalculatedTotal = `R$ ${calculatedTotal.toFixed(2).replace('.', ',')}`;
+    const displayTotal = total !== 'R$ 0,00' ? total : formattedCalculatedTotal;
 
     // const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     // const [itemToDelete, setItemToDelete] = useState(null);
@@ -220,33 +213,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
     // const firstOrder = orders[0];
     // const waiterName = firstOrder?.waiter?.name || 'Garçom';
 
-    // Aggregate Items
-    // const itemsHelper = {};
-    orders.forEach(order => {
-        if (order.items) {
-            order.items.forEach(item => {
-                // Adjust property access based on actual API response
-                // Assuming: item.menuItem.name or item.name
-                const name = item.menuItem?.name || item.name || 'Item';
-                const price = Number(item.price || item.unitPrice || 0);
-                const key = item.menuItemId || name;
 
-                if (!itemsHelper[key]) {
-                    itemsHelper[key] = {
-                        name,
-                        qty: 0,
-                        price: price,
-                        // Keep track of total value for this item type
-                        totalValue: 0
-                    };
-                }
-                itemsHelper[key].qty += item.quantity;
-                itemsHelper[key].totalValue += (price * item.quantity);
-            });
-        }
-    });
-
-    const items = Object.values(itemsHelper);
 
     const scrollRef = useRef(null);
 
@@ -310,7 +277,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                     </div>
                     <div className="header-right-group">
                         <div className="total-label-xs">Total Parcial</div>
-                        <div className="total-value-md">{total}</div>
+                        <div className="total-value-md">{displayTotal}</div>
                     </div>
                 </div>
 
@@ -364,9 +331,9 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                     <div className="ops-meta-row">
                         <ClockIcon /> Ativa há {duration}
                         <span>•</span>
-                        <span>1 Pedido</span>
+                        <span>{orders.length} Pedido{orders.length !== 1 && 's'}</span>
                         <span>•</span>
-                        <span>0 itens consumidos</span>
+                        <span>{items.reduce((acc, curr) => acc + curr.qty, 0)} itens consumidos</span>
                         <span>•</span>
                         <span className="waiter-pill">{waiterName}</span>
                     </div>
@@ -376,27 +343,32 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                 <div className="detail-items-section">
                     <h3 className="section-title-bold" style={{ marginBottom: 12 }}>Itens na Mesa</h3>
                     <div className="items-list-vertical">
-                        {items.map((item, idx) => (
-                            <div className="item-row-operational" key={idx}>
-                                <div className="item-left-block">
-                                    <div className="item-qty-badge-op">{item.qty}</div>
-                                    <div className="item-meta-block">
-                                        <span className="item-name-op">{item.name}</span>
-                                        <span className="item-time-op">Pedido às 20:30 • {waiterName}</span>
+                        {items.length === 0 ? (
+                            <div className="empty-state" style={{ padding: '24px 0', color: 'var(--text-tertiary)' }}>
+                                Nenhum item pedido ainda.
+                            </div>
+                        ) : (
+                            items.map((item, idx) => (
+                                <div className="item-row-operational" key={idx}>
+                                    <div className="item-left-block">
+                                        <div className="item-qty-badge-op">{item.qty}</div>
+                                        <div className="item-meta-block">
+                                            <span className="item-name-op">{item.name}</span>
+                                        </div>
+                                    </div>
+                                    <div className="item-price-op">
+                                        R$ {item.totalValue.toFixed(2).replace('.', ',')}
+                                        <button
+                                            onClick={() => handleDeleteClick(item)}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', marginLeft: '12px', padding: '4px' }}
+                                            title="Excluir item"
+                                        >
+                                            <TrashIcon />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="item-price-op">
-                                    R$ {(12 * item.qty).toFixed(2).replace('.', ',')}
-                                    <button
-                                        onClick={() => handleDeleteClick(item)}
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', marginLeft: '12px', padding: '4px' }}
-                                        title="Excluir item"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -409,7 +381,7 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
             <div className="detail-footer-pro">
                 <div className="footer-left-block">
                     <span className="footer-label">Total Acumulado</span>
-                    <span className="footer-value">{total}</span>
+                    <span className="footer-value">{displayTotal}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
                     {/* <button

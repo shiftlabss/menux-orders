@@ -20,7 +20,12 @@ export const api = {
             });
 
             if (response.status === 401) {
-                localStorage.removeItem('token');
+                // Only clear the user token if the request was using the user's own token.
+                // If a custom Authorization header was provided (e.g. waiterToken), don't clear.
+                const usedCustomAuth = options.headers && options.headers['Authorization'];
+                if (!usedCustomAuth) {
+                    localStorage.removeItem('token');
+                }
                 throw new Error('Unauthorized');
             }
 

@@ -19,8 +19,8 @@ export const LoginModal = ({ onLoginSuccess }) => {
         setIsLoading(true);
 
         try {
-            await authService.login(email, password);
-            onLoginSuccess();
+            const response = await authService.login(email, password);
+            onLoginSuccess(response);
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
                 setError(err.response.data.message);

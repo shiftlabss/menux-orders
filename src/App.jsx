@@ -9,6 +9,10 @@ import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
+  const [userData, setUserData] = useState(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
   // State for Tables
   // const [tables, setTables] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,27 +54,37 @@ function App() {
         const pathParts = window.location.pathname.split('/').filter(Boolean);
         const restaurantIdParam = pathParts.length > 0 ? pathParts[pathParts.length - 1] : null;
 
-        if (!restaurantIdParam) {
-          console.error("No restaurant ID provided in the URL.");
-          setIsLoading(false);
-          return;
-        }
+        if (restaurantIdParam) {
+          // 2. Fetch Restaurant Details from URL param
+          const restaurant = await restaurantService.getById(restaurantIdParam);
 
-        // 2. Fetch Restaurant Details
-        const restaurant = await restaurantService.getById(restaurantIdParam);
+          if (restaurant && restaurant.id) {
+            localStorage.setItem('restaurantId', restaurant.id);
+            console.log(`Restaurant Context Loaded: ${restaurant.name} (${restaurant.id})`);
+          }
 
-        if (restaurant && restaurant.id) {
-          localStorage.setItem('restaurantId', restaurant.id);
-          console.log(`Restaurant Context Loaded: ${restaurant.name} (${restaurant.id})`);
-        }
-
-        // 3. Authentication Check
-        if (authService.isAuthenticated()) {
-          setIsAuthenticated(true);
-          fetchTables();
+          // 3. Authentication Check
+          if (authService.isAuthenticated()) {
+            setIsAuthenticated(true);
+            fetchTables();
+          } else {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
         } else {
-          setIsAuthenticated(false);
-          setIsLoading(false);
+          // No restaurantId in URL - check if already authenticated with stored restaurantId
+          const storedRestaurantId = localStorage.getItem('restaurantId');
+
+          if (authService.isAuthenticated() && storedRestaurantId) {
+            // Update URL with stored restaurantId
+            window.history.replaceState(null, '', `/${storedRestaurantId}`);
+            setIsAuthenticated(true);
+            fetchTables();
+          } else {
+            // Show login modal
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
         }
 
       } catch (error) {
@@ -182,6 +196,20 @@ function App() {
     setSelectedTableId(null);
   };
 
+  // Logout handler
+  const handleLogout = () => {
+    authService.logout();
+    setIsAuthenticated(false);
+    setUserData(null);
+    window.history.replaceState(null, '', '/');
+  };
+
+  // Generate initials for avatar
+  const getInitials = (user) => {
+    const name = user?.name || user?.nickname || user?.email || '?';
+    return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   // Derived state
   const activeTable = tables.find(t => t.id === selectedTableId);
 
@@ -189,7 +217,20 @@ function App() {
     <div className="app-container">
       {!isAuthenticated && (
         <LoginModal
-          onLoginSuccess={() => {
+          onLoginSuccess={async (response) => {
+            const restaurantId = response?.user?.restaurantId;
+            if (restaurantId) {
+              window.history.replaceState(null, '', `/${restaurantId}`);
+              try {
+                const restaurant = await restaurantService.getById(restaurantId);
+                if (restaurant && restaurant.id) {
+                  localStorage.setItem('restaurantId', restaurant.id);
+                }
+              } catch (error) {
+                console.error("Error fetching restaurant after login:", error);
+              }
+            }
+            setUserData(response?.user || null);
             setIsAuthenticated(true);
             fetchTables();
           }}
@@ -200,6 +241,20 @@ function App() {
         <div className="header-logo">
           <img src="/logo-menux.svg" alt="menux" style={{ height: '24px' }} />
         </div>
+        {isAuthenticated && userData && (
+          <div className="header-user-info">
+            <div className="user-avatar">{getInitials(userData)}</div>
+            <span className="user-name">{userData.name || userData.nickname}</span>
+            <button className="btn-logout" onClick={handleLogout} title="Sair">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              Sair
+            </button>
+          </div>
+        )}
       </header>
 
       <main className="main-content">

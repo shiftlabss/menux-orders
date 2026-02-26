@@ -6,6 +6,9 @@ export const authService = {
         if (response.access_token) {
             localStorage.setItem('token', response.access_token);
             localStorage.setItem('user', JSON.stringify(response.user));
+            if (response.user && response.user.restaurantId) {
+                localStorage.setItem('restaurantId', response.user.restaurantId);
+            }
         }
         return response;
     },
@@ -13,6 +16,7 @@ export const authService = {
     logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('restaurantId');
     },
 
     isAuthenticated() {
