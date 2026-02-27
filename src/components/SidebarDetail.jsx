@@ -149,8 +149,13 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
     let calculatedTotal = 0;
 
     orders.forEach(order => {
+        if (order.status === 'FINISHED') return; // Ignora pedidos finalizados
+
         if (order.items) {
             order.items.forEach(item => {
+                const itemStatus = item.status || item.order?.status || order.status;
+                if (itemStatus === 'FINISHED') return; // Ignora itens finalizados
+
                 const name = item.menuItem?.name || item.name || 'Item';
                 const price = Number(item.price || item.unitPrice || item.menuItem?.price || 0);
                 const key = item.menuItemId || name; // Group by menuItemId or Name

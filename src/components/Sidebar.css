@@ -339,6 +339,30 @@
     background-color: var(--bg-surface);
 }
 
+.order-item-card.pending {
+    border-color: var(--color-amber-300, #FCD34D);
+    background-color: var(--color-amber-50, #FFFBEB);
+}
+
+.order-item-card.confirmed {
+    border-color: var(--border-default);
+}
+
+.status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2px;
+}
+
+.status-icon.pending-icon {
+    color: var(--color-amber-600, #D97706);
+}
+
+.status-icon.confirmed-icon {
+    color: var(--color-emerald-600, #059669);
+}
+
 .item-header {
     display: flex;
     flex-wrap: wrap;
@@ -463,15 +487,25 @@
 
 /* Order Status Warning */
 .order-status-warning {
-    background-color: var(--color-amber-50, #FFFBEB);
-    border: 1px solid var(--color-amber-300, #FCD34D);
-    color: var(--color-amber-800, #92400E);
     padding: 10px 16px;
     border-radius: 8px;
     font-size: 12px;
     margin-left: auto;
     margin-right: 16px;
     text-align: center;
+    border: 1px solid transparent;
+}
+
+.order-status-warning.partial-label {
+    background-color: var(--color-amber-50, #FFFBEB);
+    border-color: var(--color-amber-300, #FCD34D);
+    color: var(--color-amber-800, #92400E);
+}
+
+.order-status-warning.confirmed-label {
+    background-color: var(--color-emerald-50, #ECFDF5);
+    border-color: var(--color-emerald-300, #6EE7B7);
+    color: var(--color-emerald-800, #065F46);
 }
 
 .order-status-warning+.footer-btn {

@@ -613,8 +613,21 @@ export const Sidebar = (props) => {
     const isCodeStepEnabled = authStatus === 'success';
     const isCodeFilled = pedidoCode.every(d => d !== '');
 
-    // Order can only be confirmed if visible and status is PENDING
-    const isOrderConfirmable = isOrderVisible && orderData?.status === 'PENDING';
+    // Check for pending vs confirmed items. Pending status is 'WAITING'.
+    const pendingItems = orderData?.items?.filter(item => {
+        const status = item.status || item.order?.status || orderData?.status;
+        return status === 'WAITING';
+    }) || [];
+
+    const confirmedItems = orderData?.items?.filter(item => {
+        const status = item.status || item.order?.status || orderData?.status;
+        return status !== 'WAITING';
+    }) || [];
+
+    const hasPendingItems = pendingItems.length > 0;
+
+    // Order can only be confirmed if visible and there are pending items
+    const isOrderConfirmable = isOrderVisible && hasPendingItems;
 
     // Product Step Enabled: Only if Auth is successful
     const isProductStepEnabled = authStatus === 'success';
@@ -1330,24 +1343,44 @@ export const Sidebar = (props) => {
                             <div className="order-details-wrapper">
                                 <h3 className="details-title">Detalhes do Pedido #{orderData?.code || '...'}</h3>
 
-                                {orderData?.items?.map((item, index) => (
-                                    <div className="order-item-card" key={item.id || index}>
-                                        <div className="item-header">
-                                            <div className="item-name-group">
-                                                <span className="item-name">{item.quantity}x {item.menuItem.name}</span>
-                                            </div>
-                                            <span className="item-price">R$ {Number(item.menuItem.price || 0).toFixed(2)}</span>
-                                        </div>
+                                {[...pendingItems, ...confirmedItems].map((item, index) => {
+                                    const itemStatus = item.status || item.order?.status || orderData?.status;
+                                    const isPending = itemStatus === 'WAITING';
 
-                                        <div className="item-footer">
-                                            {item.notes && (
-                                                <div className="item-addons" style={{ fontSize: 16 }}>
-                                                    • {item.notes}
+                                    return (
+                                        <div className={`order-item-card ${isPending ? 'pending' : 'confirmed'}`} key={item.id || index}>
+                                            <div className="item-header">
+                                                <div className="item-name-group">
+                                                    {isPending && (
+                                                        <span className="status-icon pending-icon" title="Item a confirmar">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <circle cx="12" cy="12" r="10" />
+                                                                <polyline points="12 6 12 12 16 14" />
+                                                            </svg>
+                                                        </span>
+                                                    )}
+                                                    {!isPending && (
+                                                        <span className="status-icon confirmed-icon" title="Item confirmado">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="20 6 9 17 4 12" />
+                                                            </svg>
+                                                        </span>
+                                                    )}
+                                                    <span className="item-name">{item.quantity}x {item.menuItem.name}</span>
                                                 </div>
-                                            )}
+                                                <span className="item-price">R$ {Number(item.menuItem.price || 0).toFixed(2)}</span>
+                                            </div>
+
+                                            <div className="item-footer">
+                                                {item.notes && (
+                                                    <div className="item-addons" style={{ fontSize: 16 }}>
+                                                        • {item.notes}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -1361,10 +1394,16 @@ export const Sidebar = (props) => {
                             </div>
                         )}
 
-                        {isOrderVisible && orderData?.status !== 'PENDING' && (
-                            <div className="order-status-warning">
-                                Pedido já "CONFIRMADO".
-                            </div>
+                        {isOrderVisible && (
+                            !hasPendingItems && confirmedItems.length > 0 ? (
+                                <div className="order-status-warning confirmed-label">
+                                    Pedido CONFIRMADO.
+                                </div>
+                            ) : hasPendingItems && confirmedItems.length > 0 ? (
+                                <div className="order-status-warning partial-label">
+                                    Pedidos a CONFIRMAR
+                                </div>
+                            ) : null
                         )}
 
                         <button
