@@ -345,7 +345,8 @@
 }
 
 .order-item-card.confirmed {
-    border-color: var(--border-default);
+    border-color: var(--color-emerald-300, #6EE7B7);
+    background-color: var(--color-emerald-50, #ECFDF5);
 }
 
 .status-icon {

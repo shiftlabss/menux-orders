@@ -651,12 +651,17 @@ export const Sidebar = (props) => {
     const isCodeFilled = pedidoCode.every(d => d !== '');
 
     // Check for pending vs confirmed items. Pending status is 'WAITING'.
+    // If the order itself has progressed past WAITING, all its items are treated as confirmed.
+    const isOrderWaiting = !orderData?.status || orderData.status === 'WAITING';
+
     const pendingItems = orderData?.items?.filter(item => {
+        if (!isOrderWaiting) return false;
         const status = item.status || item.order?.status || orderData?.status;
         return status === 'WAITING';
     }) || [];
 
     const confirmedItems = orderData?.items?.filter(item => {
+        if (!isOrderWaiting) return true;
         const status = item.status || item.order?.status || orderData?.status;
         return status !== 'WAITING';
     }) || [];
@@ -1397,7 +1402,7 @@ export const Sidebar = (props) => {
 
                                 {[...pendingItems, ...confirmedItems].map((item, index) => {
                                     const itemStatus = item.status || item.order?.status || orderData?.status;
-                                    const isPending = itemStatus === 'WAITING';
+                                    const isPending = isOrderWaiting && itemStatus === 'WAITING';
 
                                     return (
                                         <div className={`order-item-card ${isPending ? 'pending' : 'confirmed'}`} key={item.id || index}>
@@ -1447,9 +1452,9 @@ export const Sidebar = (props) => {
                         )}
 
                         {isOrderVisible && (
-                            !hasPendingItems && confirmedItems.length > 0 ? (
+                            !hasPendingItems && orderData ? (
                                 <div className="order-status-warning confirmed-label">
-                                    Pedido CONFIRMADO.
+                                    Pedido já Confirmado
                                 </div>
                             ) : hasPendingItems && confirmedItems.length > 0 ? (
                                 <div className="order-status-warning partial-label">
