@@ -113,9 +113,16 @@ const LogOutIcon = () => (
     </svg>
 );
 
+const PlusIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+);
 
 
-export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }) => {
+
+export const SidebarDetail = ({ table, onGroup, onTransfer, onNewOrder, onBack, onFinalize }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
@@ -396,6 +403,14 @@ export const SidebarDetail = ({ table, onGroup, onTransfer, onBack, onFinalize }
                     >
                         <GroupIcon /> Agrupar
                     </button> */}
+                    <button
+                        className="btn-action-footer"
+                        onClick={onNewOrder}
+                        title="Lançar novo pedido nesta mesa"
+                    >
+                        <PlusIcon /> Lançar Pedido
+                    </button>
+
                     <button
                         className="btn-action-footer"
                         onClick={onTransfer}

@@ -550,6 +550,43 @@ export const Sidebar = (props) => {
         }, 100);
     };
 
+    const handleNewOrderFromDetail = () => {
+        // Reset Form State
+        setTableName('');
+        setSelectedTable(props.activeTable);
+        setShowDropdown(false);
+        setIdGarcom(['', '', '', '']);
+        setSenha(['', '', '', '']);
+        setAuthStatus('idle');
+        setPedidoCode(['', '', '', '']);
+        setCodeStatus('idle');
+        setIsOrderVisible(false);
+        setWaiterToken(null);
+        setWaiterInfo(null);
+        setOrderData(null);
+
+        // Manually clear physical input values from refs if they held stale data
+        idRefs.current.forEach(input => {
+            if (input) {
+                input.value = '';
+                input.blur(); // Ensure it doesn't immediately capture a lingering keyup
+            }
+        });
+        senhaRefs.current.forEach(input => {
+            if (input) input.value = '';
+        });
+        codeRefs.current.forEach(input => {
+            if (input) input.value = '';
+        });
+
+        setViewMode('create_order');
+
+        // Auto-focus the ID Garcom input after render, with enough delay to prevent capturing keyboard events (like 'r' from 'Enter'/'Space')
+        setTimeout(() => {
+            idRefs.current[0]?.focus();
+        }, 300);
+    };
+
     const handleStartProductLaunch = () => {
         // Reset Form State
         setTableName('');
@@ -709,6 +746,7 @@ export const Sidebar = (props) => {
             table={props.activeTable}
             onGroup={handleOpenGroup}
             onTransfer={handleOpenTransfer}
+            onNewOrder={handleNewOrderFromDetail}
             onBack={props.onClose}
             onFinalize={() => {
                 if (props.onConfirmOrder) props.onConfirmOrder(props.activeTable.id);
@@ -853,6 +891,8 @@ export const Sidebar = (props) => {
                                     {idGarcom.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`idGarcom-${i}`}
+                                            autoComplete="new-password"
                                             className="pin-box"
                                             value={val}
                                             onChange={(e) => handlePinChange(i, e.target.value, setIdGarcom, idGarcom, idRefs)}
@@ -871,6 +911,8 @@ export const Sidebar = (props) => {
                                     {senha.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`senhaGarcom-${i}`}
+                                            autoComplete="new-password"
                                             className="pin-box"
                                             type="password"
                                             value={val}
@@ -1109,6 +1151,8 @@ export const Sidebar = (props) => {
                                     {idGarcom.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`transferIdGarcom-${i}`}
+                                            autoComplete="new-password"
                                             className="pin-box"
                                             value={val}
                                             onChange={(e) => handlePinChange(i, e.target.value, setIdGarcom, idGarcom, idRefs)}
@@ -1125,6 +1169,8 @@ export const Sidebar = (props) => {
                                     {senha.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`transferSenhaGarcom-${i}`}
+                                            autoComplete="new-password"
                                             className="pin-box"
                                             type="password"
                                             value={val}
@@ -1253,6 +1299,8 @@ export const Sidebar = (props) => {
                                     {idGarcom.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`createIdGarcom-${i}`}
+                                            autoComplete="new-password"
                                             className="pin-box"
                                             value={val}
                                             onChange={(e) => handlePinChange(i, e.target.value, setIdGarcom, idGarcom, idRefs)}
@@ -1271,6 +1319,8 @@ export const Sidebar = (props) => {
                                     {senha.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`createSenhaGarcom-${i}`}
+                                            autoComplete="new-password"
                                             className="pin-box"
                                             type="password" /* Masked Input */
                                             value={val}
@@ -1303,6 +1353,8 @@ export const Sidebar = (props) => {
                                     {pedidoCode.map((val, i) => (
                                         <input
                                             key={i}
+                                            name={`pedidoCode-${i}`}
+                                            autoComplete="off"
                                             className="pin-box"
                                             value={val}
                                             onChange={(e) => handlePinChange(i, e.target.value, setPedidoCode, pedidoCode, codeRefs)}
